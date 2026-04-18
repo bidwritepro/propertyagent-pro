@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PropertyAgent Pro — AI Property Analysis & Offer Engine</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+<style>
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#f8fafc; }
+  .line-clamp-1 { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .gradient-hero { background:linear-gradient(135deg,#2563eb 0%,#1e40af 100%); }
+  .gradient-bg { background:linear-gradient(135deg,#f8fafc 0%,#eff6ff 100%); }
+  .card { background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.08); border:1px solid #e5e7eb; }
+  .card-hover:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); border-color:#93c5fd; cursor:pointer; }
+  .badge { display:inline-flex; align-items:center; padding:2px 10px; border-radius:9999px; font-size:11px; font-weight:600; }
+  .badge-red { background:#fee2e2; color:#991b1b; }
+  .badge-orange { background:#ffedd5; color:#9a3412; }
+  .badge-yellow { background:#fef9c3; color:#854d0e; }
+  .badge-green { background:#dcfce7; color:#166534; }
+  .badge-blue { background:#dbeafe; color:#1e40af; }
+  .score-bar { width:100%; background:#e5e7eb; border-radius:9999px; height:10px; }
+  .score-fill { height:10px; border-radius:9999px; transition:width 0.5s ease; }
+  .checkbox-on { background:#eff6ff; border-color:#93c5fd; color:#1e40af; }
+  .checkbox-off { background:#fff; border-color:#e5e7eb; color:#6b7280; }
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; }
+  select, input, textarea { outline:none; }
+  select:focus, input:focus, textarea:focus { box-shadow:0 0 0 3px rgba(59,130,246,0.3); border-color:#3b82f6; }
+  @media print {
+    body { background:#fff !important; }
+    .no-print { display:none !important; }
+    .print-only { display:block !important; }
+    .print-page { box-shadow:none !important; border:none !important; padding:0 !important; max-width:100% !important; }
+    @page { margin: 0.75in; size: letter; }
+  }
+  .print-only { display:none; }
+  /* Tooltip styles */
+  .tooltip-trigger { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%; background:#dbeafe; color:#2563eb; font-size:10px; font-weight:700; cursor:pointer; margin-left:4px; vertical-align:middle; border:1px solid #93c5fd; position:relative; }
+  .tooltip-trigger:hover { background:#bfdbfe; }
+  .tooltip-popup { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#1e293b; color:#f1f5f9; padding:10px 14px; border-radius:8px; font-size:12px; font-weight:400; line-height:1.5; width:260px; z-index:1000; box-shadow:0 8px 24px rgba(0,0,0,0.2); pointer-events:auto; }
+  .tooltip-popup::after { content:""; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:6px solid transparent; border-top-color:#1e293b; }
+  /* Modal overlay */
+  .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(2px); }
+  .modal-card { background:#fff; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-width:440px; width:90%; padding:32px; position:relative; animation:modalIn 0.25s ease; }
+  @keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+  .modal-input { width:100%; border:1px solid #d1d5db; border-radius:8px; padding:10px 14px; font-size:14px; box-sizing:border-box; margin-bottom:12px; }
+  .modal-input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.2); outline:none; }
+  .modal-btn { width:100%; padding:12px; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SIMULATED DATA
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const LISTINGS = [
+  {
+    id:1, address:"1842 Oakwood Dr", city:"Tampa", state:"FL", zip:"33607",
+    price:389000, beds:4, baths:2.5, sqft:2180, yearBuilt:2005, lotSize:0.28,
+    type:"Single Family", daysOnMarket:47, listDate:"2026-02-28", previousListings:2,
+    originalPrice:419000,
+    priceReductions:[{date:"2026-03-15",from:419000,to:399000},{date:"2026-04-01",from:399000,to:389000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12057C0380H",
+    crimeScore:38, crimeGrade:"B", nearestSchoolRating:7, nearestHighway:1.2,
+    previousSales:[{date:"2019-06-15",price:310000},{date:"2005-03-22",price:225000}],
+    permits:{open:0,closed:8,lastPermit:{type:"Roof Replacement",date:"2023-04-10",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:150,
+    taxAssessed:342000, taxYear:2025, annualTax:5890,
+    description:"Well-maintained 4BR home with updated kitchen, new roof (2023), screened pool, and 2-car garage. Corner lot in established neighborhood.",
+    features:["Pool","Updated Kitchen","New Roof","2-Car Garage","Corner Lot"]
+  },
+  {
+    id:2, address:"567 Bayshore Blvd #204", city:"Tampa", state:"FL", zip:"33606",
+    price:425000, beds:3, baths:2, sqft:1650, yearBuilt:2018, lotSize:0,
+    type:"Condo", daysOnMarket:12, listDate:"2026-04-04", previousListings:0,
+    originalPrice:425000, priceReductions:[],
+    floodZone:"AE", floodRisk:"High", femaPanel:"12057C0370H",
+    crimeScore:22, crimeGrade:"A", nearestSchoolRating:8, nearestHighway:0.5,
+    previousSales:[{date:"2022-01-10",price:385000}],
+    permits:{open:1,closed:3,lastPermit:{type:"HVAC Repair",date:"2026-01-20",status:"Open"}},
+    foreclosure:false, lisPendens:false, hoa:485,
+    taxAssessed:398000, taxYear:2025, annualTax:6850,
+    description:"Modern waterfront condo with bay views, granite counters, and resort-style amenities. Walking distance to downtown.",
+    features:["Bay Views","Resort Pool","Gym","Granite Counters","Concierge"]
+  },
+  {
+    id:3, address:"2210 W Platt St", city:"Tampa", state:"FL", zip:"33609",
+    price:349900, beds:3, baths:2, sqft:1450, yearBuilt:1972, lotSize:0.18,
+    type:"Single Family", daysOnMarket:93, listDate:"2026-01-14", previousListings:3,
+    originalPrice:399000,
+    priceReductions:[{date:"2026-02-10",from:399000,to:379000},{date:"2026-03-05",from:379000,to:359900},{date:"2026-04-01",from:359900,to:349900}],
+    floodZone:"X500", floodRisk:"Moderate", femaPanel:"12057C0375H",
+    crimeScore:52, crimeGrade:"C+", nearestSchoolRating:5, nearestHighway:0.8,
+    previousSales:[{date:"2021-09-01",price:320000},{date:"2016-04-18",price:198000},{date:"2010-11-03",price:112000}],
+    permits:{open:2,closed:12,lastPermit:{type:"Electrical",date:"2025-11-15",status:"Open"}},
+    foreclosure:false, lisPendens:true, hoa:0,
+    taxAssessed:289000, taxYear:2025, annualTax:4980,
+    description:"Charming bungalow in South Tampa. Needs cosmetic updates but solid bones. Large fenced yard. Motivated seller.",
+    features:["Fenced Yard","Wood Floors","Detached Garage","Mature Trees"]
+  },
+  {
+    id:4, address:"8901 N Armenia Ave", city:"Tampa", state:"FL", zip:"33604",
+    price:275000, beds:3, baths:1.5, sqft:1280, yearBuilt:1965, lotSize:0.15,
+    type:"Single Family", daysOnMarket:156, listDate:"2025-11-12", previousListings:4,
+    originalPrice:339000,
+    priceReductions:[{date:"2025-12-15",from:339000,to:319000},{date:"2026-01-20",from:319000,to:299000},{date:"2026-03-01",from:299000,to:285000},{date:"2026-04-05",from:285000,to:275000}],
+    floodZone:"AH", floodRisk:"High", femaPanel:"12057C0360H",
+    crimeScore:68, crimeGrade:"D+", nearestSchoolRating:4, nearestHighway:0.3,
+    previousSales:[{date:"2023-07-20",price:295000},{date:"2018-02-14",price:165000}],
+    permits:{open:3,closed:5,lastPermit:{type:"Plumbing",date:"2026-02-01",status:"Open"}},
+    foreclosure:true, lisPendens:true, hoa:0,
+    taxAssessed:248000, taxYear:2025, annualTax:4270,
+    description:"Bank-owned property. Sold as-is. Multiple open permits. Needs significant renovation. Great investment opportunity.",
+    features:["Large Lot","Carport","Near Transit"]
+  }
+];
+
+const COMPARABLES = [
+  {address:"1900 W Cleveland St",price:375000,sqft:2050,beds:4,baths:2,soldDate:"2026-03-10",daysOnMarket:34,pricePerSqft:182.93},
+  {address:"2105 W Jetton Ave",price:412000,sqft:2300,beds:4,baths:2.5,soldDate:"2026-02-22",daysOnMarket:28,pricePerSqft:179.13},
+  {address:"1755 S Lois Ave",price:358000,sqft:1980,beds:3,baths:2,soldDate:"2026-03-28",daysOnMarket:52,pricePerSqft:180.81},
+  {address:"3012 W Bay to Bay Blvd",price:395000,sqft:2150,beds:4,baths:2,soldDate:"2026-01-15",daysOnMarket:41,pricePerSqft:183.72},
+  {address:"1622 S Howard Ave",price:382000,sqft:2100,beds:3,baths:2.5,soldDate:"2026-04-02",daysOnMarket:19,pricePerSqft:181.90},
+];
+
+const MARKET = {
+  medianPrice:385000, avgPricePerSqft:181.70, activeListings:342, avgDaysOnMarket:38,
+  monthlyInventory:3.2, priceChangeYoY:-2.1, soldLastMonth:107, listToSaleRatio:0.965
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PRICING ALGORITHMS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function compBased(listing, comps) {
+  const avgPSF = comps.reduce((s,c)=>s+c.pricePerSqft,0)/comps.length;
+  let base = avgPSF * listing.sqft;
+  const adj = [];
+  const age = 2026-listing.yearBuilt;
+  if(age>30){base*=0.96;adj.push({l:"Age >30 yrs",p:-4});}
+  else if(age>15){base*=0.98;adj.push({l:"Age 15-30 yrs",p:-2});}
+  if(listing.daysOnMarket>90){base*=0.95;adj.push({l:"On market >90 days (stale)",p:-5});}
+  else if(listing.daysOnMarket>60){base*=0.97;adj.push({l:"On market >60 days",p:-3});}
+  else if(listing.daysOnMarket>30){base*=0.99;adj.push({l:"On market >30 days",p:-1});}
+  if(listing.priceReductions.length>=3){base*=0.97;adj.push({l:"3+ price cuts (motivated)",p:-3});}
+  else if(listing.priceReductions.length>=1){base*=0.99;adj.push({l:"Price reduced",p:-1});}
+  if(listing.floodRisk==="High"){base*=0.93;adj.push({l:"High flood risk zone",p:-7});}
+  else if(listing.floodRisk==="Moderate"){base*=0.97;adj.push({l:"Moderate flood risk",p:-3});}
+  if(listing.foreclosure){base*=0.90;adj.push({l:"Foreclosure / bank-owned",p:-10});}
+  if(listing.lisPendens){base*=0.97;adj.push({l:"Lis pendens filed",p:-3});}
+  if(listing.permits.open>0){base*=(1-listing.permits.open*0.015);adj.push({l:listing.permits.open+" open permit(s)",p:-(listing.permits.open*1.5)});}
+  base*=MARKET.listToSaleRatio;
+  adj.push({l:"Market list-to-sale ratio ("+((MARKET.listToSaleRatio*100).toFixed(1))+"%)",p:-((1-MARKET.listToSaleRatio)*100)});
+  return {price:Math.round(base),avgPSF:avgPSF.toFixed(2),baseRaw:Math.round(avgPSF*listing.sqft),adj};
+}
+
+function multiFactor(listing) {
+  const f=[];let ts=0,tw=0;
+  const add=(name,score,weight,detail)=>{f.push({name,score,weight,detail});ts+=score*weight;tw+=weight;};
+  const ptr=listing.price/listing.taxAssessed;
+  add("Price vs Tax Assessed",ptr>1.2?30:ptr>1.1?50:ptr>1.0?70:90,15,
+    "Listed "+((ptr-1)*100).toFixed(1)+"% "+(ptr>=1?"above":"below")+" assessed ($"+listing.taxAssessed.toLocaleString()+")");
+  add("Days on Market",listing.daysOnMarket<14?40:listing.daysOnMarket<30?55:listing.daysOnMarket<60?70:listing.daysOnMarket<90?80:95,12,
+    listing.daysOnMarket+" days (area avg: "+MARKET.avgDaysOnMarket+")");
+  const tr=listing.originalPrice-listing.price;
+  add("Price Reduction History",listing.priceReductions.length===0?40:listing.priceReductions.length===1?60:listing.priceReductions.length===2?75:90,10,
+    listing.priceReductions.length+" cut(s), $"+tr.toLocaleString()+" off ("+((tr/listing.originalPrice)*100).toFixed(1)+"%)");
+  add("Flood Zone Risk",listing.floodRisk==="Minimal"?30:listing.floodRisk==="Moderate"?60:90,12,
+    "Zone "+listing.floodZone+" — "+listing.floodRisk+" (FEMA: "+listing.femaPanel+")");
+  add("Crime Index",listing.crimeScore<25?30:listing.crimeScore<40?45:listing.crimeScore<55?60:listing.crimeScore<70?75:90,10,
+    "Score "+listing.crimeScore+"/100 — Grade "+listing.crimeGrade);
+  add("Open Permits",listing.permits.open===0?20:listing.permits.open===1?55:listing.permits.open===2?75:95,8,
+    listing.permits.open+" open, "+listing.permits.closed+" closed");
+  add("Foreclosure / Lis Pendens",(!listing.foreclosure&&!listing.lisPendens)?20:(listing.lisPendens&&!listing.foreclosure)?65:listing.foreclosure?90:50,10,
+    "Foreclosure: "+(listing.foreclosure?"Yes":"No")+" | Lis Pendens: "+(listing.lisPendens?"Yes":"No"));
+  let apS=50;
+  if(listing.previousSales.length>0){
+    const ls=listing.previousSales[0];const ya=2026-parseInt(ls.date.split("-")[0]);
+    const aa=ya>0?((listing.price/ls.price)**(1/ya)-1)*100:0;
+    apS=aa>8?85:aa>5?65:aa>3?50:35;
+    add("Annual Appreciation",apS,8,aa.toFixed(1)+"%/yr since $"+ls.price.toLocaleString()+" in "+ls.date.split("-")[0]);
+  } else { add("Annual Appreciation",50,8,"No previous sale data"); }
+  add("Market Conditions",MARKET.monthlyInventory>5?85:MARKET.monthlyInventory>3?65:MARKET.monthlyInventory>2?45:30,8,
+    MARKET.monthlyInventory+" mo inventory, "+(MARKET.priceChangeYoY>0?"+":"")+MARKET.priceChangeYoY+"% YoY");
+  add("Listing History",listing.previousListings===0?30:listing.previousListings===1?50:listing.previousListings===2?70:90,7,
+    "Listed "+(listing.previousListings+1)+" time(s) total");
+  const cs=ts/tw;
+  const dp=Math.max(0,Math.min(18,(cs-20)*0.257));
+  return {score:cs.toFixed(1),discPct:dp.toFixed(1),price:Math.round(listing.price*(1-dp/100)),factors:f};
+}
+
+function reconcile(cp,fp,listing){
+  const avg=Math.round((cp+fp)/2),lo=Math.min(cp,fp),hi=Math.max(cp,fp),sp=hi-lo;
+  const conf=sp<listing.price*0.03?"High":sp<listing.price*0.06?"Moderate":"Low";
+  return {rec:avg,lo,hi,sp,conf,save:listing.price-avg,savePct:((listing.price-avg)/listing.price*100).toFixed(1)};
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SVG ICONS
+   ═══════════════════════════════════════════════════════════════════════ */
+const Icon=({d,size=16,color="#6b7280"})=>(
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{d}</svg>
+);
+const HomeIcon=({s=20,c="#fff"})=><Icon size={s} color={c} d={<><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></>}/>;
+const SearchIcon=({s=18,c="#fff"})=><Icon size={s} color={c} d={<><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>}/>;
+const ChevLeft=({s=16,c="#2563eb"})=><Icon size={s} color={c} d={<polyline points="15 18 9 12 15 6"/>}/>;
+const ClockIcon=({s=13,c="#9ca3af"})=><Icon size={s} color={c} d={<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>}/>;
+const CheckIcon=({s=14,c="#16a34a"})=><Icon size={s} color={c} d={<><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>}/>;
+const XIcon=({s=14,c="#dc2626"})=><Icon size={s} color={c} d={<><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></>}/>;
+const WarnIcon=({s=14,c="#ca8a04"})=><Icon size={s} color={c} d={<><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>}/>;
+const DownIcon=({s=14,c="#16a34a"})=><Icon size={s} color={c} d={<><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></>}/>;
+const UpIcon=({s=14,c="#dc2626"})=><Icon size={s} color={c} d={<><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>}/>;
+const PrintIcon=({s=18,c="#fff"})=><Icon size={s} color={c} d={<><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></>}/>;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DEFAULT CONTINGENCIES
+   ═══════════════════════════════════════════════════════════════════════ */
+const DEFAULT_CONTINGENCIES = [
+  { id:1, label:"Home Inspection", days:10, enabled:true, text:"Buyer shall have the right to conduct a professional home inspection within {days} calendar days of the effective date. If defects or conditions are discovered that are unacceptable to the Buyer, the Buyer may request repairs, a price reduction, or terminate this agreement with full return of earnest money deposit." },
+  { id:2, label:"Appraisal", days:14, enabled:true, text:"This offer is contingent upon the property appraising at or above the purchase price of {price}. If the appraisal is below the offer price, the Buyer may renegotiate the purchase price, request the Seller to reduce the price to the appraised value, or terminate this agreement with full return of earnest money deposit." },
+  { id:3, label:"Financing / Mortgage", days:21, enabled:true, text:"This offer is contingent upon the Buyer obtaining a firm commitment for financing within {days} calendar days of the effective date. If the Buyer is unable to obtain financing under terms acceptable to the Buyer, this agreement shall be null and void and all earnest money shall be returned to the Buyer." },
+  { id:4, label:"Flood Zone Determination", days:10, enabled:false, text:"This offer is contingent upon a satisfactory flood zone determination. Buyer shall obtain a flood zone certification within {days} calendar days. If the property is determined to be in a Special Flood Hazard Area (SFHA) requiring flood insurance, the Buyer may renegotiate terms or terminate this agreement." },
+  { id:5, label:"Clear Title & Title Search", days:14, enabled:true, text:"Seller shall provide marketable and insurable title, free and clear of all liens, encumbrances, and defects, except those acceptable to the Buyer. If title defects cannot be cured within {days} calendar days, the Buyer may terminate this agreement with full return of earnest money." },
+  { id:6, label:"Survey", days:14, enabled:false, text:"Buyer may obtain a current survey of the property within {days} calendar days. If the survey reveals encroachments, boundary disputes, or easements unacceptable to the Buyer, the Buyer may terminate this agreement or negotiate resolution with the Seller." },
+  { id:7, label:"Termite / Wood-Destroying Organism (WDO)", days:10, enabled:false, text:"Buyer may obtain a WDO inspection within {days} calendar days. If active infestation or structural damage from wood-destroying organisms is found, the Seller shall treat the property and repair all damage at Seller's expense, or the Buyer may terminate this agreement." },
+  { id:8, label:"HOA / Condo Association Review", days:5, enabled:false, text:"Buyer shall receive and review all homeowner or condominium association documents within {days} calendar days, including bylaws, financial statements, rules and regulations, and pending assessments. If any terms are unacceptable, the Buyer may terminate this agreement." },
+  { id:9, label:"Sale of Buyer's Existing Property", days:30, enabled:false, text:"This offer is contingent upon the successful closing of the Buyer's current property located at __________________ within {days} calendar days. If the Buyer's property does not close within this period, the Buyer may terminate this agreement." },
+  { id:10, label:"Environmental / Soil Test", days:14, enabled:false, text:"Buyer may conduct environmental testing including soil tests, radon testing, lead paint testing, mold inspection, and/or Phase I Environmental Site Assessment within {days} calendar days. If results are unsatisfactory to the Buyer, the Buyer may terminate this agreement." },
+  { id:11, label:"Open Permit Resolution", days:14, enabled:false, text:"Seller shall resolve and close all open building permits on the property within {days} calendar days prior to closing, at Seller's expense. Failure to close all open permits shall constitute a default by the Seller, and the Buyer may terminate this agreement." },
+  { id:12, label:"Insurance Availability", days:10, enabled:false, text:"This offer is contingent upon the Buyer obtaining homeowner's insurance (including wind and flood if applicable) at a cost not exceeding a reasonable amount as determined by the Buyer, within {days} calendar days. If adequate insurance cannot be obtained, the Buyer may terminate this agreement." },
+];
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MAIN APP
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function App() {
+  const [step, setStep] = useState("input"); // input | results | analysis | offer
+  const [sel, setSel] = useState(null);
+  const [form, setForm] = useState({
+    propertyType:"Single Family", city:"Tampa", state:"FL", zip:"33607",
+    minBeds:3, minBaths:2, maxPrice:450000, downPayment:60000,
+    minAcres:"", maxAcres:"", minYearBuilt:"",
+    nearSchool:true, nearHighway:false, lowCrime:true, noFloodZone:false, noForeclosure:false,
+    nearHospital:false, nearShopping:false, nearPublicTransit:false, nearJobsite:false,
+    waterfront:false, poolRequired:false, garageRequired:false, gatedCommunity:false,
+    cornerLot:false, noHOA:false, newConstruction:false, noLisPendens:false,
+    fencedYard:false, singleStory:false
+  });
+  // Offer letter state
+  const [buyerInfo, setBuyerInfo] = useState({ name:"", address:"", city:"", state:"FL", zip:"", phone:"", email:"", agent:"", agentLicense:"", agentPhone:"", agentEmail:"", brokerage:"", brokerageLicense:"" });
+  const [sellerInfo, setSellerInfo] = useState({ name:"", address:"", agent:"", agentLicense:"", agentPhone:"", brokerage:"" });
+  const [contingencies, setContingencies] = useState(DEFAULT_CONTINGENCIES.map(c=>({...c})));
+  const [customContingencies, setCustomContingencies] = useState([]);
+  const [newCustom, setNewCustom] = useState("");
+  const [earnestMoney, setEarnestMoney] = useState(5000);
+  const [additionalDeposit, setAdditionalDeposit] = useState(0);
+  const [depositDeadline, setDepositDeadline] = useState(3);
+  const [escrowAgent, setEscrowAgent] = useState("");
+  const [closingDays, setClosingDays] = useState(30);
+  const [offerExpDays, setOfferExpDays] = useState(3);
+  const [financingType, setFinancingType] = useState("Conventional");
+  const [loanTerm, setLoanTerm] = useState(30);
+  const [interestRateCap, setInterestRateCap] = useState(7.5);
+  const [preApproval, setPreApproval] = useState(true);
+  const [titleCompany, setTitleCompany] = useState("");
+  const [titlePaidBy, setTitlePaidBy] = useState("Buyer");
+  const [surveyRequired, setSurveyRequired] = useState(false);
+  const [deedType, setDeedType] = useState("Warranty Deed");
+  const [personalPropertyIncluded, setPersonalPropertyIncluded] = useState("All permanently installed fixtures, built-in appliances, ceiling fans, light fixtures, window treatments, garage door openers and remotes, mailbox, and all existing landscaping.");
+  const [personalPropertyExcluded, setPersonalPropertyExcluded] = useState("");
+  const [possessionAt, setPossessionAt] = useState("Closing");
+  const [walkthrough, setWalkthrough] = useState(true);
+  const [disputeResolution, setDisputeResolution] = useState("Mediation then Litigation");
+  const [assignable, setAssignable] = useState(false);
+  const [sellerConcessions, setSellerConcessions] = useState(0);
+  const [homeWarranty, setHomeWarranty] = useState(false);
+  const [homeWarrantyPaidBy, setHomeWarrantyPaidBy] = useState("Seller");
+  const [homeWarrantyAmount, setHomeWarrantyAmount] = useState(500);
+  const [additionalTerms, setAdditionalTerms] = useState("");
+  const [legalDescription, setLegalDescription] = useState("");
+  const [taxParcelId, setTaxParcelId] = useState("");
+  const [countyName, setCountyName] = useState("Hillsborough");
+  const [manualOfferPrice, setManualOfferPrice] = useState(0); // 0 = use AI suggested
+  const [hasBuyerAgent, setHasBuyerAgent] = useState(false);
+
+  // Registration & payment state
+  const [userRegistered, setUserRegistered] = useState(false);
+  const [registrationInfo, setRegistrationInfo] = useState({ name:"", email:"", phone:"" });
+  const [showRegModal, setShowRegModal] = useState(false);
+  const [hasPaid, setHasPaid] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [activeTooltip, setActiveTooltip] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const OFFER_FEE = 29.99;
+
+  // Tooltip helper component
+  const Tip = ({id, text}) => (
+    <span className="tooltip-trigger" onClick={(e)=>{e.preventDefault();e.stopPropagation();setActiveTooltip(activeTooltip===id?null:id);}}>
+      ?
+      {activeTooltip===id && <span className="tooltip-popup" onClick={e=>e.stopPropagation()}>{text}</span>}
+    </span>
+  );
+  // Close tooltip when clicking outside
+  React.useEffect(()=>{
+    const close=()=>setActiveTooltip(null);
+    if(activeTooltip) document.addEventListener("click",close);
+    return ()=>document.removeEventListener("click",close);
+  },[activeTooltip]);
+
+  // Tooltip definitions
+  const TIPS = {
+    earnestMoney: "A good-faith deposit showing you're serious about the purchase. Typically 1-3% of the offer price. Held in escrow and applied to your down payment at closing.",
+    additionalDeposit: "An extra deposit made after the initial earnest money, usually due within a specified number of days. Shows stronger commitment to the seller.",
+    depositDeadline: "The number of business days after the contract is signed by which the earnest money must be delivered to the escrow agent.",
+    escrowAgent: "A neutral third party (usually a title company or attorney) who holds the earnest money deposit until closing. Required by Florida Statute §475.25.",
+    closingDays: "The number of calendar days from contract acceptance to the final closing/settlement. Typical range is 30-45 days for financed purchases, 14-21 for cash.",
+    offerExpDays: "How many days the seller has to respond to your offer before it automatically expires. Shorter deadlines (2-3 days) can create urgency.",
+    financingType: "The type of mortgage loan you plan to use. Conventional (private lender), FHA (gov't insured, lower down payment), VA (veterans), USDA (rural), etc.",
+    loanTerm: "The length of your mortgage in years. 30-year is most common (lower payments), 15-year builds equity faster but has higher monthly payments.",
+    interestRateCap: "The maximum interest rate you'll accept on your mortgage. If your lender can't offer a rate at or below this cap, the financing contingency protects you.",
+    preApproval: "A lender's written commitment that you qualify for a specific loan amount. Strongly recommended — sellers favor pre-approved buyers.",
+    titleCompany: "The company that performs the title search, issues title insurance, and typically handles the closing. In Florida, the buyer usually selects the title company.",
+    titlePaidBy: "Who pays for the owner's title insurance policy. In Florida, this is negotiable but traditionally paid by the seller in most counties.",
+    surveyRequired: "A professional land survey confirms property boundaries, easements, and encroachments. Recommended for single-family homes, especially older properties.",
+    deedType: "Warranty Deed provides the strongest buyer protection (seller guarantees clear title). Quitclaim Deed offers no warranties. Special Warranty limits guarantees to seller's ownership period.",
+    possessionAt: "When you get the keys. 'At Closing' is standard. 'Post-closing occupancy' means the seller stays temporarily (needs a separate agreement).",
+    sellerConcessions: "Dollar amount the seller agrees to pay toward your closing costs. Helps reduce your out-of-pocket expenses. Lenders cap this (usually 3-6% of loan amount).",
+    homeWarranty: "A service contract covering repair/replacement of major home systems (HVAC, plumbing, electrical, appliances) for the first year. Typically $400-$600.",
+    assignable: "Whether you can transfer your rights under this contract to another buyer before closing. Useful for investors; most residential contracts are non-assignable.",
+    disputeResolution: "How disagreements about the contract will be resolved. Mediation is a non-binding negotiation with a neutral mediator. Arbitration is binding. Litigation goes to court.",
+    lisPendens: "Latin for 'pending lawsuit.' A recorded notice that a lawsuit has been filed involving the property. Creates title uncertainty and may affect financing.",
+    walkthrough: "A final inspection (usually 24-48 hours before closing) to verify the property's condition matches what was agreed upon and all repairs were completed.",
+    personalProperty: "Items included in the sale beyond the house itself. Fixtures (permanently attached items) are usually included automatically. Appliances and other items should be specified.",
+    legalDescription: "The official legal description of the property from the deed or county records. More precise than a street address — references plat books, lot numbers, sections, etc.",
+    taxParcelId: "The unique identification number assigned by the county property appraiser for tax assessment purposes. Found on the property tax bill or county records.",
+    prorations: "Adjustment of shared costs (property taxes, HOA dues, etc.) between buyer and seller based on the closing date. Each party pays their proportional share."
+  };
+
+  const u=(k,v)=>setForm({...form,[k]:v});
+  const isLandType = form.propertyType==="Farm" || form.propertyType==="Land/Lot";
+
+  // Handle "Generate Offer Letter" click — gate behind registration
+  const handleGenerateOffer = (l) => {
+    if(l.floodRisk!=="Minimal") setContingencies(prev=>prev.map(c=>c.id===4?{...c,enabled:true}:c));
+    if(l.hoa>0) setContingencies(prev=>prev.map(c=>c.id===8?{...c,enabled:true}:c));
+    if(l.permits.open>0) setContingencies(prev=>prev.map(c=>c.id===11?{...c,enabled:true}:c));
+    if(!userRegistered) {
+      setShowRegModal(true);
+    } else {
+      setStep("offer");
+    }
+  };
+
+  // Handle print — gate behind payment
+  const handlePrint = () => {
+    if(!hasPaid) {
+      setShowPaymentModal(true);
+    } else {
+      window.print();
+    }
+  };
+
+  // Registration Modal
+  const RegModal = () => showRegModal ? (
+    <div className="modal-overlay" onClick={()=>setShowRegModal(false)}>
+      <div className="modal-card" onClick={e=>e.stopPropagation()}>
+        <div style={{textAlign:"center",marginBottom:24}}>
+          <div style={{background:"#2563eb",borderRadius:12,padding:10,display:"inline-flex",marginBottom:12}}><HomeIcon s={28}/></div>
+          <h2 style={{margin:"0 0 4px",fontSize:20,fontWeight:700,color:"#111827"}}>Create Your Free Account</h2>
+          <p style={{margin:0,fontSize:13,color:"#6b7280"}}>Register to access the AI-powered offer letter generator</p>
+        </div>
+        <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Full Name *</label>
+        <input className="modal-input" placeholder="John Smith" value={registrationInfo.name} onChange={e=>setRegistrationInfo({...registrationInfo,name:e.target.value})}/>
+        <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Email Address *</label>
+        <input className="modal-input" type="email" placeholder="john@example.com" value={registrationInfo.email} onChange={e=>setRegistrationInfo({...registrationInfo,email:e.target.value})}/>
+        <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Phone Number *</label>
+        <input className="modal-input" type="tel" placeholder="(555) 123-4567" value={registrationInfo.phone} onChange={e=>setRegistrationInfo({...registrationInfo,phone:e.target.value})}/>
+        <button className="modal-btn" disabled={!registrationInfo.name||!registrationInfo.email||!registrationInfo.phone}
+          style={{background:registrationInfo.name&&registrationInfo.email&&registrationInfo.phone?"linear-gradient(135deg,#2563eb,#1e40af)":"#d1d5db",color:registrationInfo.name&&registrationInfo.email&&registrationInfo.phone?"#fff":"#9ca3af",marginTop:8}}
+          onClick={()=>{
+            fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registrationInfo)})
+              .then(r=>r.json()).then(d=>{if(d.success)setCurrentUserId(d.user.id);}).catch(()=>{});
+            setUserRegistered(true);setShowRegModal(false);setBuyerInfo(prev=>({...prev,name:registrationInfo.name,email:registrationInfo.email,phone:registrationInfo.phone}));setStep("offer");
+          }}>
+          🚀 Continue to Offer Generator
+        </button>
+        <p style={{fontSize:11,color:"#9ca3af",textAlign:"center",marginTop:12,marginBottom:0}}>Your information is stored securely and never shared with third parties.</p>
+      </div>
+    </div>
+  ) : null;
+
+  // Payment Modal
+  const PayModal = () => showPaymentModal ? (
+    <div className="modal-overlay" onClick={()=>setShowPaymentModal(false)}>
+      <div className="modal-card" onClick={e=>e.stopPropagation()}>
+        <div style={{textAlign:"center",marginBottom:24}}>
+          <div style={{fontSize:40,marginBottom:8}}>🔒</div>
+          <h2 style={{margin:"0 0 4px",fontSize:20,fontWeight:700,color:"#111827"}}>Print Your Offer Letter</h2>
+          <p style={{margin:0,fontSize:13,color:"#6b7280"}}>One-time fee per offer — unlimited revisions before printing</p>
+        </div>
+        <div style={{background:"#f8fafc",border:"1px solid #e5e7eb",borderRadius:12,padding:20,marginBottom:20}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:12}}>
+            <span style={{fontSize:14,fontWeight:600,color:"#374151"}}>AI-Generated Offer Letter</span>
+            <span style={{fontSize:24,fontWeight:800,color:"#2563eb"}}>${OFFER_FEE}</span>
+          </div>
+          <div style={{fontSize:12,color:"#6b7280",lineHeight:1.8}}>
+            ✅ Broker-quality FL residential purchase contract<br/>
+            ✅ Customized contingencies & legal disclosures<br/>
+            ✅ AI-powered pricing analysis included<br/>
+            ✅ Print or save as PDF — unlimited copies<br/>
+            ✅ Edit and re-print at any time
+          </div>
+        </div>
+        <div style={{border:"1px solid #e5e7eb",borderRadius:10,padding:16,marginBottom:16}}>
+          <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:6}}>Card Number</label>
+          <input className="modal-input" placeholder="4242 4242 4242 4242" style={{marginBottom:8}}/>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            <div><label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:6}}>Expiry</label><input className="modal-input" placeholder="MM/YY" style={{marginBottom:0}}/></div>
+            <div><label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:6}}>CVC</label><input className="modal-input" placeholder="123" style={{marginBottom:0}}/></div>
+          </div>
+        </div>
+        <button className="modal-btn" style={{background:"linear-gradient(135deg,#16a34a,#15803d)",color:"#fff"}}
+          onClick={()=>{
+            if(currentUserId && sel){
+              fetch('/api/payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+                user_id:currentUserId, amount:OFFER_FEE, property_address:sel.address, property_city:sel.city, property_zip:sel.zip, offer_price:manualOfferPrice>0?manualOfferPrice:null
+              })}).catch(()=>{});
+            }
+            setHasPaid(true);setShowPaymentModal(false);setTimeout(()=>window.print(),300);
+          }}>
+          💳 Pay ${OFFER_FEE} & Print
+        </button>
+        <p style={{fontSize:11,color:"#9ca3af",textAlign:"center",marginTop:12,marginBottom:0}}>🔒 Secured with 256-bit SSL encryption. This is a simulated payment for prototype purposes.</p>
+      </div>
+    </div>
+  ) : null;
+
+  // ─── SCREEN 1: INPUT ───────────────────────────────────────────────
+  if (step==="input") return (
+    <div className="gradient-bg min-h-screen">
+      <header style={{background:"#fff",borderBottom:"1px solid #e5e7eb",boxShadow:"0 1px 3px rgba(0,0,0,.06)"}}>
+        <div style={{maxWidth:900,margin:"0 auto",padding:"16px 24px",display:"flex",alignItems:"center",gap:12}}>
+          <div style={{background:"#2563eb",borderRadius:10,padding:8,display:"flex"}}><HomeIcon/></div>
+          <div><h1 style={{fontSize:20,fontWeight:700,margin:0,color:"#111827"}}>PropertyAgent Pro</h1>
+          <p style={{fontSize:13,color:"#6b7280",margin:0}}>AI-Powered Property Analysis & Offer Engine</p></div>
+        </div>
+      </header>
+
+      <div style={{maxWidth:900,margin:"0 auto",padding:"32px 24px"}}>
+        <div className="card" style={{padding:32}}>
+          <h2 style={{fontSize:17,fontWeight:600,color:"#111827",marginTop:0,display:"flex",alignItems:"center",gap:8}}>
+            <SearchIcon s={18} c="#2563eb"/> Property Search Criteria
+          </h2>
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+            {[
+              {label:"Property Type",type:"select",key:"propertyType",opts:["Single Family","Condo","Townhouse","Multi-Family","Farm","Land/Lot"]},
+              {label:"City",type:"text",key:"city"},
+              {label:"State",type:"text",key:"state"},
+              {label:"ZIP Code",type:"text",key:"zip"},
+              ...(!isLandType ? [
+                {label:"Min Bedrooms",type:"select",key:"minBeds",opts:["1","2","3","4","5","6+"]},
+                {label:"Min Bathrooms",type:"select",key:"minBaths",opts:["1","1.5","2","2.5","3","4+"]},
+              ] : [
+                {label:"Min Acreage",type:"number",key:"minAcres"},
+                {label:"Max Acreage",type:"number",key:"maxAcres"},
+              ]),
+              {label:"Maximum Price ($)",type:"number",key:"maxPrice"},
+              {label:"Down Payment ($)",type:"number",key:"downPayment"},
+              ...(!isLandType ? [{label:"Min Year Built",type:"number",key:"minYearBuilt"}] : []),
+            ].map(f=>(
+              <div key={f.key}>
+                <label style={{display:"block",fontSize:13,fontWeight:500,color:"#374151",marginBottom:4}}>{f.label}</label>
+                {f.type==="select" ? (
+                  <select value={form[f.key]} onChange={e=>u(f.key,f.key==="minBeds"||f.key==="minBaths"?+e.target.value:e.target.value)}
+                    style={{width:"100%",border:"1px solid #d1d5db",borderRadius:8,padding:"10px 12px",fontSize:14}}>
+                    {f.opts.map(o=><option key={o} value={o}>{o}{f.key==="minBeds"||f.key==="minBaths"?"+":""}</option>)}
+                  </select>
+                ) : (
+                  <input type={f.type} value={form[f.key]} onChange={e=>u(f.key,f.type==="number"?+e.target.value:e.target.value)}
+                    placeholder={f.key==="minYearBuilt"?"e.g. 2000":f.key==="minAcres"?"e.g. 5":f.key==="maxAcres"?"e.g. 50":""}
+                    style={{width:"100%",border:"1px solid #d1d5db",borderRadius:8,padding:"10px 12px",fontSize:14,boxSizing:"border-box"}}/>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* ─── LOCATION & PROXIMITY ─── */}
+          <h3 style={{fontSize:13,fontWeight:600,color:"#374151",marginTop:28,marginBottom:4}}>Location & Proximity</h3>
+          <p style={{fontSize:11,color:"#9ca3af",margin:"0 0 10px"}}>Select what you want to be near or avoid</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+            {[
+              {key:"nearSchool",label:"Near Good Schools",icon:"🏫"},
+              {key:"nearHighway",label:"Near Highway/Interstate",icon:"🛣️"},
+              {key:"nearHospital",label:"Near Hospital/Medical",icon:"🏥"},
+              {key:"nearShopping",label:"Near Shopping/Dining",icon:"🛒"},
+              {key:"nearPublicTransit",label:"Near Public Transit",icon:"🚌"},
+              {key:"nearJobsite",label:"Near My Jobsite",icon:"💼"},
+            ].map(c=>(
+              <label key={c.key} className={form[c.key]?"checkbox-on":"checkbox-off"}
+                style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderRadius:8,border:"1px solid",cursor:"pointer",fontSize:13,fontWeight:500}}>
+                <input type="checkbox" checked={form[c.key]} onChange={e=>u(c.key,e.target.checked)} style={{accentColor:"#2563eb"}}/>
+                <span>{c.icon}</span> {c.label}
+              </label>
+            ))}
+          </div>
+
+          {/* ─── PROPERTY FEATURES ─── */}
+          <h3 style={{fontSize:13,fontWeight:600,color:"#374151",marginTop:20,marginBottom:4}}>Property Features</h3>
+          <p style={{fontSize:11,color:"#9ca3af",margin:"0 0 10px"}}>Must-have features for your property</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+            {[
+              ...(isLandType ? [] : [
+                {key:"poolRequired",label:"Pool / Spa",icon:"🏊"},
+                {key:"garageRequired",label:"Garage",icon:"🚗"},
+                {key:"singleStory",label:"Single Story Only",icon:"🏠"},
+              ]),
+              {key:"waterfront",label:"Waterfront / Water View",icon:"🌊"},
+              {key:"cornerLot",label:"Corner Lot",icon:"📐"},
+              {key:"fencedYard",label:"Fenced Yard",icon:"🏡"},
+              {key:"gatedCommunity",label:"Gated Community",icon:"🔒"},
+              {key:"newConstruction",label:"New Construction Only",icon:"🏗️"},
+            ].map(c=>(
+              <label key={c.key} className={form[c.key]?"checkbox-on":"checkbox-off"}
+                style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderRadius:8,border:"1px solid",cursor:"pointer",fontSize:13,fontWeight:500}}>
+                <input type="checkbox" checked={form[c.key]} onChange={e=>u(c.key,e.target.checked)} style={{accentColor:"#2563eb"}}/>
+                <span>{c.icon}</span> {c.label}
+              </label>
+            ))}
+          </div>
+
+          {/* ─── RISK FILTERS ─── */}
+          <h3 style={{fontSize:13,fontWeight:600,color:"#374151",marginTop:20,marginBottom:4}}>Safety & Risk Filters</h3>
+          <p style={{fontSize:11,color:"#9ca3af",margin:"0 0 10px"}}>Exclude properties with these risk factors</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+            {[
+              {key:"lowCrime",label:"Low Crime Area Only",icon:"🛡️"},
+              {key:"noFloodZone",label:"No Flood Zone",icon:"💧"},
+              {key:"noForeclosure",label:"No Foreclosures",icon:"🏦"},
+              {key:"noLisPendens",label:"No Lis Pendens",icon:"⚖️"},
+              {key:"noHOA",label:"No HOA",icon:"📝"},
+            ].map(c=>(
+              <label key={c.key} className={form[c.key]?"checkbox-on":"checkbox-off"}
+                style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderRadius:8,border:"1px solid",cursor:"pointer",fontSize:13,fontWeight:500}}>
+                <input type="checkbox" checked={form[c.key]} onChange={e=>u(c.key,e.target.checked)} style={{accentColor:"#2563eb"}}/>
+                <span>{c.icon}</span> {c.label}
+              </label>
+            ))}
+          </div>
+
+          <button onClick={()=>setStep("results")}
+            style={{marginTop:28,width:"100%",background:"#2563eb",color:"#fff",border:"none",borderRadius:10,padding:"14px 24px",fontSize:15,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+            <SearchIcon/> Search Properties & Analyze
+          </button>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginTop:24}}>
+          {[
+            {icon:"📊",title:"Data Sources",val:"7+",sub:"MLS, FEMA, County, Crime, Permits"},
+            {icon:"⚖️",title:"Pricing Models",val:"2",sub:"Comp-Based + Multi-Factor"},
+            {icon:"📄",title:"Offer Letter",val:"Auto",sub:"Printable with contingencies"},
+          ].map((c,i)=>(
+            <div key={i} className="card" style={{padding:16,textAlign:"center"}}>
+              <div style={{fontSize:22}}>{c.icon}</div>
+              <p style={{fontSize:11,color:"#6b7280",fontWeight:500,margin:"4px 0 0"}}>{c.title}</p>
+              <p style={{fontSize:22,fontWeight:700,color:"#111827",margin:"2px 0"}}>{c.val}</p>
+              <p style={{fontSize:11,color:"#9ca3af",margin:0}}>{c.sub}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ─── SCREEN 2: RESULTS ─────────────────────────────────────────────
+  if (step==="results") return (
+    <div className="gradient-bg min-h-screen">
+      <header style={{background:"#fff",borderBottom:"1px solid #e5e7eb",boxShadow:"0 1px 3px rgba(0,0,0,.06)"}}>
+        <div style={{maxWidth:1000,margin:"0 auto",padding:"16px 24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <div style={{background:"#2563eb",borderRadius:10,padding:8,display:"flex"}}><HomeIcon/></div>
+            <div><h1 style={{fontSize:20,fontWeight:700,margin:0,color:"#111827"}}>PropertyAgent Pro</h1>
+            <p style={{fontSize:13,color:"#6b7280",margin:0}}>{form.city}, {form.state} {form.zip} — {LISTINGS.length} properties found</p></div>
+          </div>
+          <button onClick={()=>setStep("input")} style={{background:"none",border:"none",color:"#2563eb",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+            <ChevLeft/> New Search
+          </button>
+        </div>
+      </header>
+
+      <div style={{maxWidth:1000,margin:"0 auto",padding:"24px"}}>
+        <div className="card" style={{padding:20,marginBottom:24}}>
+          <h3 style={{fontSize:13,fontWeight:600,color:"#374151",marginTop:0,marginBottom:12}}>📊 Area Market Snapshot</h3>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16}}>
+            {[
+              {l:"Median Price",v:"$"+MARKET.medianPrice.toLocaleString()},
+              {l:"Avg $/sqft",v:"$"+MARKET.avgPricePerSqft},
+              {l:"Active Listings",v:MARKET.activeListings},
+              {l:"Avg Days on Market",v:MARKET.avgDaysOnMarket},
+              {l:"Inventory (months)",v:MARKET.monthlyInventory},
+              {l:"Price Change YoY",v:(MARKET.priceChangeYoY>0?"+":"")+MARKET.priceChangeYoY+"%",c:MARKET.priceChangeYoY<0?"#dc2626":"#16a34a"},
+              {l:"Sold Last 30 Days",v:MARKET.soldLastMonth},
+              {l:"List-to-Sale Ratio",v:(MARKET.listToSaleRatio*100).toFixed(1)+"%"},
+            ].map((s,i)=>(
+              <div key={i}>
+                <p style={{fontSize:11,color:"#6b7280",margin:0}}>{s.l}</p>
+                <p style={{fontSize:18,fontWeight:700,color:s.c||"#111827",margin:"2px 0 0"}}>{s.v}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {LISTINGS.map(l=>{
+          const mf=multiFactor(l);
+          return (
+            <div key={l.id} className="card card-hover" style={{padding:20,marginBottom:16}} onClick={()=>{setSel(l);setStep("analysis");}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
+                    <h3 style={{fontSize:16,fontWeight:700,color:"#111827",margin:0}}>{l.address}</h3>
+                    {l.foreclosure && <span className="badge badge-red">Foreclosure</span>}
+                    {l.lisPendens && <span className="badge badge-orange">Lis Pendens</span>}
+                    {l.daysOnMarket>60 && <span className="badge badge-yellow">Stale Listing</span>}
+                    {l.floodRisk==="High" && <span className="badge badge-red">Flood Zone</span>}
+                  </div>
+                  <p style={{fontSize:13,color:"#6b7280",margin:"0 0 8px"}}>{l.city}, {l.state} {l.zip} — {l.type}</p>
+                  <div style={{display:"flex",gap:16,fontSize:13,color:"#4b5563"}}>
+                    <span>{l.beds} bed</span><span>{l.baths} bath</span><span>{l.sqft.toLocaleString()} sqft</span>
+                    <span>Built {l.yearBuilt}</span>
+                    <span style={{display:"flex",alignItems:"center",gap:3}}><ClockIcon/> {l.daysOnMarket} days</span>
+                  </div>
+                  <p className="line-clamp-1" style={{fontSize:12,color:"#9ca3af",marginTop:8}}>{l.description}</p>
+                </div>
+                <div style={{textAlign:"right",marginLeft:24,flexShrink:0}}>
+                  <p style={{fontSize:20,fontWeight:700,color:"#111827",margin:0}}>${l.price.toLocaleString()}</p>
+                  <p style={{fontSize:12,color:"#9ca3af",margin:"2px 0"}}>${(l.price/l.sqft).toFixed(0)}/sqft</p>
+                  {l.originalPrice>l.price && <p style={{fontSize:12,color:"#ef4444",textDecoration:"line-through",margin:0}}>${l.originalPrice.toLocaleString()}</p>}
+                  <div style={{background:"#eff6ff",borderRadius:8,padding:"6px 12px",marginTop:8}}>
+                    <p style={{fontSize:11,color:"#2563eb",fontWeight:500,margin:0}}>Negotiation Score</p>
+                    <p style={{fontSize:20,fontWeight:700,color:"#1e40af",margin:0}}>{mf.score}</p>
+                  </div>
+                  <p style={{fontSize:12,color:"#2563eb",fontWeight:500,marginTop:6}}>Full Analysis →</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // ─── SCREEN 3: ANALYSIS ────────────────────────────────────────────
+  if (step==="analysis" && sel) {
+    const l=sel;
+    const ca=compBased(l,COMPARABLES);
+    const mf=multiFactor(l);
+    const of=reconcile(ca.price,mf.price,l);
+    const loan=of.rec-form.downPayment;
+    const mr=0.0685/12, np=360;
+    const mp=loan*(mr*Math.pow(1+mr,np))/(Math.pow(1+mr,np)-1);
+    const mt=l.annualTax/12;
+    const mi=l.floodRisk==="High"?380:l.floodRisk==="Moderate"?220:150;
+    const tot=mp+mt+mi+l.hoa;
+
+    return (
+      <div className="gradient-bg min-h-screen">
+        <header className="no-print" style={{background:"#fff",borderBottom:"1px solid #e5e7eb",boxShadow:"0 1px 3px rgba(0,0,0,.06)"}}>
+          <div style={{maxWidth:1100,margin:"0 auto",padding:"16px 24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <div style={{background:"#2563eb",borderRadius:10,padding:8,display:"flex"}}><HomeIcon/></div>
+              <div><h1 style={{fontSize:20,fontWeight:700,margin:0,color:"#111827"}}>{l.address}</h1>
+              <p style={{fontSize:13,color:"#6b7280",margin:0}}>{l.city}, {l.state} {l.zip}</p></div>
+            </div>
+            <div style={{display:"flex",gap:12}}>
+              <button onClick={()=>setStep("results")} style={{background:"none",border:"none",color:"#2563eb",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+                <ChevLeft/> Back to Results
+              </button>
+              <button onClick={()=>{
+                handleGenerateOffer(l);
+              }}
+                style={{background:"#16a34a",color:"#fff",border:"none",borderRadius:8,padding:"8px 16px",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+                📄 Generate Offer Letter
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <div style={{maxWidth:1100,margin:"0 auto",padding:"24px",display:"flex",flexDirection:"column",gap:24}}>
+
+          {/* HERO: SUGGESTED OFFER */}
+          <div className="card" style={{overflow:"hidden"}}>
+            <div className="gradient-hero" style={{padding:"24px 32px",color:"#fff"}}>
+              <p style={{fontSize:12,fontWeight:500,opacity:0.7,margin:"0 0 4px",letterSpacing:1}}>🎯 AI-POWERED SUGGESTED OFFER</p>
+              <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
+                <div>
+                  <p style={{fontSize:38,fontWeight:700,margin:0}}>${of.rec.toLocaleString()}</p>
+                  <p style={{fontSize:13,opacity:0.7,margin:"4px 0 0"}}>List: ${l.price.toLocaleString()} — Save ${of.save.toLocaleString()} ({of.savePct}%)</p>
+                </div>
+                <div style={{display:"flex",gap:32,textAlign:"right"}}>
+                  <div><p style={{fontSize:11,opacity:0.5,margin:0}}>Low Estimate</p><p style={{fontSize:18,fontWeight:600,margin:0}}>${of.lo.toLocaleString()}</p></div>
+                  <div><p style={{fontSize:11,opacity:0.5,margin:0}}>High Estimate</p><p style={{fontSize:18,fontWeight:600,margin:0}}>${of.hi.toLocaleString()}</p></div>
+                  <div><p style={{fontSize:11,opacity:0.5,margin:0}}>Confidence</p>
+                    <p style={{fontSize:18,fontWeight:600,margin:0,color:of.conf==="High"?"#86efac":of.conf==="Moderate"?"#fde68a":"#fca5a5"}}>{of.conf}</p></div>
+                </div>
+              </div>
+            </div>
+            <div style={{padding:"16px 32px",background:"#eff6ff",borderTop:"1px solid #bfdbfe",display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:16,textAlign:"center"}}>
+              <div><p style={{fontSize:11,color:"#6b7280",margin:0}}>Down Payment</p><p style={{fontSize:14,fontWeight:600,margin:"2px 0 0"}}>${form.downPayment.toLocaleString()}</p></div>
+              <div><p style={{fontSize:11,color:"#6b7280",margin:0}}>Loan Amount</p><p style={{fontSize:14,fontWeight:600,margin:"2px 0 0"}}>${loan.toLocaleString()}</p></div>
+              <div><p style={{fontSize:11,color:"#6b7280",margin:0}}>Monthly P&I</p><p style={{fontSize:14,fontWeight:600,margin:"2px 0 0"}}>${Math.round(mp).toLocaleString()}</p></div>
+              <div><p style={{fontSize:11,color:"#6b7280",margin:0}}>Tax+Ins+HOA</p><p style={{fontSize:14,fontWeight:600,margin:"2px 0 0"}}>${Math.round(mt+mi+l.hoa).toLocaleString()}/mo</p></div>
+              <div><p style={{fontSize:11,color:"#6b7280",margin:0}}>Total Monthly</p><p style={{fontSize:16,fontWeight:700,color:"#1e40af",margin:"2px 0 0"}}>${Math.round(tot).toLocaleString()}/mo</p></div>
+            </div>
+          </div>
+
+          {/* TWO METHODS */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
+            <div className="card" style={{padding:24}}>
+              <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>📊 Method 1: Comparable Sales</h3>
+              <div style={{background:"#f9fafb",borderRadius:8,padding:16,marginBottom:16}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{fontSize:12,color:"#6b7280"}}>Base (avg comp $/sqft x sqft)</span>
+                  <span style={{fontSize:14,fontWeight:600}}>${ca.baseRaw.toLocaleString()}</span>
+                </div>
+                <p style={{fontSize:11,color:"#9ca3af",margin:"0 0 12px"}}>Avg comp: ${ca.avgPSF}/sqft x {l.sqft.toLocaleString()} sqft</p>
+                {ca.adj.map((a,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",borderTop:"1px solid #e5e7eb"}}>
+                    <span style={{fontSize:12,color:"#4b5563"}}>{a.l}</span>
+                    <span style={{fontSize:12,fontWeight:500,color:a.p<0?"#dc2626":"#16a34a"}}>{a.p>0?"+":""}{a.p.toFixed(1)}%</span>
+                  </div>
+                ))}
+                <div style={{display:"flex",justifyContent:"space-between",paddingTop:12,marginTop:8,borderTop:"2px solid #d1d5db"}}>
+                  <span style={{fontSize:14,fontWeight:700}}>Comp-Based Estimate</span>
+                  <span style={{fontSize:18,fontWeight:700,color:"#16a34a"}}>${ca.price.toLocaleString()}</span>
+                </div>
+              </div>
+              <h4 style={{fontSize:12,fontWeight:600,color:"#6b7280",marginBottom:8}}>Recent Comps</h4>
+              {COMPARABLES.map((c,i)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",padding:8,background:i%2===0?"#f9fafb":"#fff",borderRadius:6,marginBottom:4,fontSize:12}}>
+                  <div>
+                    <p style={{fontWeight:500,color:"#111827",margin:0}}>{c.address}</p>
+                    <p style={{color:"#9ca3af",margin:0}}>{c.beds}bd/{c.baths}ba - {c.sqft.toLocaleString()} sqft - Sold {c.soldDate}</p>
+                  </div>
+                  <div style={{textAlign:"right"}}>
+                    <p style={{fontWeight:600,color:"#111827",margin:0}}>${c.price.toLocaleString()}</p>
+                    <p style={{color:"#9ca3af",margin:0}}>${c.pricePerSqft}/sqft</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="card" style={{padding:24}}>
+              <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>🧮 Method 2: Multi-Factor Scoring</h3>
+              <div style={{background:"#f9fafb",borderRadius:8,padding:16,marginBottom:16}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{fontSize:12,color:"#6b7280"}}>Composite Negotiation Score</span>
+                  <span style={{fontSize:20,fontWeight:700,color:"#7c3aed"}}>{mf.score}/100</span>
+                </div>
+                <div className="score-bar"><div className="score-fill" style={{width:mf.score+"%",background:"#7c3aed"}}/></div>
+                <p style={{fontSize:11,color:"#9ca3af",margin:"8px 0 0"}}>Higher = more leverage. Discount: {mf.discPct}%</p>
+                <div style={{display:"flex",justifyContent:"space-between",paddingTop:12,marginTop:8,borderTop:"2px solid #d1d5db"}}>
+                  <span style={{fontSize:14,fontWeight:700}}>Factor-Based Estimate</span>
+                  <span style={{fontSize:18,fontWeight:700,color:"#7c3aed"}}>${mf.price.toLocaleString()}</span>
+                </div>
+              </div>
+              {mf.factors.map((f,i)=>(
+                <div key={i} style={{marginBottom:12}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+                    <span style={{fontSize:12,fontWeight:500,color:"#374151"}}>{f.name}</span>
+                    <div style={{display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{fontSize:11,color:"#9ca3af"}}>wt:{f.weight}</span>
+                      <span style={{fontSize:12,fontWeight:700,color:f.score>=70?"#16a34a":f.score>=45?"#ca8a04":"#2563eb"}}>{f.score}</span>
+                    </div>
+                  </div>
+                  <div className="score-bar"><div className="score-fill" style={{width:f.score+"%",background:f.score>=70?"#16a34a":f.score>=45?"#eab308":"#3b82f6"}}/></div>
+                  <p style={{fontSize:11,color:"#9ca3af",margin:"2px 0 0"}}>{f.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* PROPERTY DATA CARDS */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:24}}>
+            <div className="card" style={{padding:20}}>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>💧 FEMA Flood Zone</h4>
+              <div style={{textAlign:"center",padding:"12px 0"}}>
+                <p style={{fontSize:28,fontWeight:700,color:"#111827",margin:0}}>Zone {l.floodZone}</p>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,margin:"4px 0"}}>
+                  {l.floodRisk==="Minimal"?<CheckIcon/>:l.floodRisk==="Moderate"?<WarnIcon/>:<XIcon/>}
+                  <span style={{fontWeight:500,color:l.floodRisk==="Minimal"?"#16a34a":l.floodRisk==="Moderate"?"#ca8a04":"#dc2626"}}>{l.floodRisk} Risk</span>
+                </div>
+                <p style={{fontSize:11,color:"#9ca3af"}}>FEMA Panel: {l.femaPanel}</p>
+                {l.floodRisk==="High" && <p style={{fontSize:11,color:"#dc2626",fontWeight:500}}>Flood insurance required (~$2,500-4,500/yr)</p>}
+              </div>
+            </div>
+            <div className="card" style={{padding:20}}>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>🛡️ Crime Analysis</h4>
+              <div style={{textAlign:"center",padding:"12px 0"}}>
+                <p style={{fontSize:28,fontWeight:700,color:"#111827",margin:0}}>Grade {l.crimeGrade}</p>
+                <p style={{fontSize:13,color:"#6b7280",margin:"4px 0"}}>Crime Index: {l.crimeScore}/100</p>
+                <div className="score-bar"><div className="score-fill" style={{width:(100-l.crimeScore)+"%",background:l.crimeScore<35?"#16a34a":l.crimeScore<55?"#eab308":"#dc2626"}}/></div>
+                <p style={{fontSize:11,color:"#9ca3af",marginTop:4}}>(Lower index = safer)</p>
+              </div>
+            </div>
+            <div className="card" style={{padding:20}}>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>📋 Building Permits</h4>
+              <div style={{textAlign:"center",padding:"12px 0"}}>
+                <div style={{display:"flex",justifyContent:"center",gap:32,marginBottom:8}}>
+                  <div><p style={{fontSize:28,fontWeight:700,color:l.permits.open>0?"#dc2626":"#16a34a",margin:0}}>{l.permits.open}</p><p style={{fontSize:11,color:"#6b7280",margin:0}}>Open</p></div>
+                  <div><p style={{fontSize:28,fontWeight:700,color:"#111827",margin:0}}>{l.permits.closed}</p><p style={{fontSize:11,color:"#6b7280",margin:0}}>Closed</p></div>
+                </div>
+                {l.permits.lastPermit && <p style={{fontSize:11,color:"#9ca3af"}}>Last: {l.permits.lastPermit.type} ({l.permits.lastPermit.date})</p>}
+                {l.permits.open>0 && <p style={{fontSize:11,color:"#dc2626",fontWeight:500}}>Open permits may indicate unfinished work</p>}
+              </div>
+            </div>
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
+            <div className="card" style={{padding:20}}>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>🏛️ County Property Records</h4>
+              {[
+                {l:"Tax Assessed Value",v:"$"+l.taxAssessed.toLocaleString()+" ("+l.taxYear+")"},
+                {l:"Annual Property Tax",v:"$"+l.annualTax.toLocaleString()},
+                {l:"List vs Assessed",v:((l.price>l.taxAssessed?"+":"")+((l.price/l.taxAssessed-1)*100).toFixed(1)+"%"),c:l.price>l.taxAssessed?"#dc2626":"#16a34a"},
+                {l:"Year Built",v:l.yearBuilt},
+                {l:"Lot Size",v:l.lotSize>0?l.lotSize+" acres":"N/A (Condo)"},
+                {l:"Foreclosure",v:l.foreclosure?"Yes — Bank Owned":"None",c:l.foreclosure?"#dc2626":"#16a34a"},
+                {l:"Lis Pendens",v:l.lisPendens?"Filed":"None",c:l.lisPendens?"#dc2626":"#16a34a"},
+              ].map((r,i)=>(
+                <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<6?"1px solid #f3f4f6":"none",fontSize:13}}>
+                  <span style={{color:"#6b7280"}}>{r.l}</span>
+                  <span style={{fontWeight:500,color:r.c||"#111827"}}>{r.v}</span>
+                </div>
+              ))}
+            </div>
+            <div className="card" style={{padding:20}}>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>📈 Sale History & Timeline</h4>
+              <div style={{display:"flex",alignItems:"center",gap:8,padding:8,background:"#eff6ff",borderRadius:8,marginBottom:8}}>
+                <div style={{width:8,height:8,borderRadius:"50%",background:"#3b82f6",flexShrink:0}}/>
+                <div><p style={{fontSize:12,fontWeight:500,color:"#111827",margin:0}}>Current: ${l.price.toLocaleString()}</p>
+                <p style={{fontSize:11,color:"#9ca3af",margin:0}}>Listed {l.listDate} - {l.daysOnMarket} days - {l.previousListings>0?"Listed "+(l.previousListings+1)+"x total":"First listing"}</p></div>
+              </div>
+              {l.priceReductions.map((pr,i)=>(
+                <div key={"pr"+i} style={{display:"flex",alignItems:"center",gap:8,padding:8}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:"#f87171",flexShrink:0}}/>
+                  <div><p style={{fontSize:12,color:"#4b5563",margin:0}}>Reduced: ${pr.from.toLocaleString()} to ${pr.to.toLocaleString()}</p>
+                  <p style={{fontSize:11,color:"#9ca3af",margin:0}}>{pr.date}</p></div>
+                </div>
+              ))}
+              {l.previousSales.map((s,i)=>(
+                <div key={"s"+i} style={{display:"flex",alignItems:"center",gap:8,padding:8}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:"#4ade80",flexShrink:0}}/>
+                  <div><p style={{fontSize:12,color:"#4b5563",margin:0}}>Sold: ${s.price.toLocaleString()}</p>
+                  <p style={{fontSize:11,color:"#9ca3af",margin:0}}>{s.date}</p></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* WHY THIS PRICE */}
+          <div className="card" style={{padding:24}}>
+            <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>ℹ️ Why This Offer Price — Supporting Analysis</h3>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
+              <div>
+                <h4 style={{fontSize:11,fontWeight:600,color:"#6b7280",textTransform:"uppercase",marginBottom:8}}>Factors Favoring Lower Offer</h4>
+                {[
+                  l.daysOnMarket>30 && l.daysOnMarket+" days on market (avg: "+MARKET.avgDaysOnMarket+") — reduced competition",
+                  l.priceReductions.length>0 && l.priceReductions.length+" price cut(s), $"+(l.originalPrice-l.price).toLocaleString()+" total — seller willing to negotiate",
+                  l.floodRisk!=="Minimal" && "FEMA Zone "+l.floodZone+" ("+l.floodRisk+") — adds insurance cost, limits buyer pool",
+                  l.foreclosure && "Bank-owned foreclosure — priced to sell, as-is condition",
+                  l.lisPendens && "Lis pendens filed — legal/financial distress = strong leverage",
+                  l.permits.open>0 && l.permits.open+" open permit(s) — may require costs or complicate financing",
+                  l.crimeScore>50 && "Crime index "+l.crimeScore+" (Grade "+l.crimeGrade+") above metro average",
+                  MARKET.priceChangeYoY<0 && "Area prices declining "+MARKET.priceChangeYoY+"% YoY — buyer's market",
+                  l.previousListings>=2 && "Listed "+(l.previousListings+1)+" times — repeated market rejection",
+                ].filter(Boolean).map((t,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,marginBottom:8}}>
+                    <span style={{flexShrink:0,marginTop:2}}><DownIcon/></span>
+                    <span style={{fontSize:13,color:"#374151"}}>{t}</span>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <h4 style={{fontSize:11,fontWeight:600,color:"#6b7280",textTransform:"uppercase",marginBottom:8}}>Factors Supporting List Price</h4>
+                {[
+                  l.daysOnMarket<21 && "New listing ("+l.daysOnMarket+" days) — seller hasn't tested market yet",
+                  l.nearestSchoolRating>=7 && "Near well-rated school ("+l.nearestSchoolRating+"/10) — premium location",
+                  l.floodRisk==="Minimal" && "Minimal flood risk (Zone X) — no flood insurance required",
+                  l.crimeScore<35 && "Low crime area (Grade "+l.crimeGrade+") supports values",
+                  l.permits.open===0 && "No open permits — all work properly closed",
+                  !l.foreclosure&&!l.lisPendens && "Clean title — no foreclosure or lis pendens",
+                  l.features.length>3 && "Features: "+l.features.join(", "),
+                ].filter(Boolean).map((t,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,marginBottom:8}}>
+                    <span style={{flexShrink:0,marginTop:2}}><UpIcon/></span>
+                    <span style={{fontSize:13,color:"#374151"}}>{t}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{marginTop:20,padding:16,background:"linear-gradient(135deg,#eff6ff,#eef2ff)",borderRadius:8,border:"1px solid #bfdbfe"}}>
+              <p style={{fontSize:13,color:"#374151",margin:0,lineHeight:1.6}}>
+                <strong style={{color:"#1e40af"}}>Reconciled Recommendation:</strong> Comp-based: <strong>${ca.price.toLocaleString()}</strong>. Multi-factor: <strong>${mf.price.toLocaleString()}</strong> (spread: ${of.sp.toLocaleString()}). Final: <strong style={{color:"#1e40af"}}>${of.rec.toLocaleString()}</strong> — {of.savePct}% below list.
+                Confidence: <strong style={{color:of.conf==="High"?"#16a34a":of.conf==="Moderate"?"#ca8a04":"#dc2626"}}>{of.conf}</strong>.
+                {of.conf==="High"?" Both models closely agree.":""}
+                {of.conf==="Moderate"?" Some divergence — consider starting at the lower estimate.":""}
+                {of.conf==="Low"?" Significant divergence — recommend further due diligence.":""}
+              </p>
+            </div>
+          </div>
+
+          {/* GENERATE OFFER BUTTON */}
+          <div className="no-print" style={{textAlign:"center"}}>
+            <button onClick={()=>handleGenerateOffer(l)}
+              style={{background:"linear-gradient(135deg,#16a34a,#15803d)",color:"#fff",border:"none",borderRadius:10,padding:"16px 48px",fontSize:16,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 12px rgba(22,163,74,0.3)"}}>
+              📄 Generate Printable Offer Letter
+            </button>
+            {!userRegistered && <p style={{fontSize:12,color:"#6b7280",marginTop:8}}>Free registration required to generate offer letters</p>}
+          </div>
+        </div>
+        <RegModal/>
+      </div>
+    );
+  }
+
+  // ─── SCREEN 4: OFFER LETTER ────────────────────────────────────────
+  if (step==="offer" && sel) {
+    const l=sel;
+    const ca=compBased(l,COMPARABLES);
+    const mf=multiFactor(l);
+    const of=reconcile(ca.price,mf.price,l);
+    const offerPrice = manualOfferPrice > 0 ? manualOfferPrice : of.rec;
+    const offerSave = l.price - offerPrice;
+    const offerSavePct = ((offerSave / l.price) * 100).toFixed(1);
+    const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    const activeContingencies = contingencies.filter(c=>c.enabled);
+    const loanAmt = offerPrice - form.downPayment;
+    const bl = "1px solid #d1d5db";
+    const fld = {width:"100%",border:bl,borderRadius:8,padding:"8px 12px",fontSize:13,boxSizing:"border-box"};
+    const lbl = {display:"block",fontSize:12,fontWeight:500,color:"#374151",marginBottom:3};
+    const sectHead = (icon,title) => <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16,display:"flex",alignItems:"center",gap:8}}>{icon} {title}</h3>;
+    const pSect = (title) => <h3 style={{fontSize:13,fontWeight:700,color:"#1e40af",textTransform:"uppercase",margin:"20px 0 10px",letterSpacing:0.5,borderBottom:"1px solid #bfdbfe",paddingBottom:6}}>{title}</h3>;
+
+    // Build supporting reasons
+    const reasons = [
+      l.daysOnMarket>30 && "The property has been on the market for "+l.daysOnMarket+" days, which is "+(l.daysOnMarket-MARKET.avgDaysOnMarket)+" days above the area average of "+MARKET.avgDaysOnMarket+" days, indicating reduced buyer demand at the current price point.",
+      l.priceReductions.length>0 && "The listing has undergone "+l.priceReductions.length+" price reduction(s) totaling $"+(l.originalPrice-l.price).toLocaleString()+" from the original list price of $"+l.originalPrice.toLocaleString()+", demonstrating seller flexibility.",
+      l.floodRisk!=="Minimal" && "The property is located in FEMA Flood Zone "+l.floodZone+" ("+l.floodRisk+" risk), which requires additional flood insurance estimated at $"+(l.floodRisk==="High"?"2,500-4,500":"800-1,500")+"/year and limits the pool of eligible buyers.",
+      l.foreclosure && "The property is bank-owned (foreclosure), which typically involves as-is condition and may require significant renovation investment by the buyer.",
+      l.lisPendens && "A lis pendens has been filed against this property, indicating pending litigation that creates title uncertainty and additional risk for the buyer.",
+      l.permits.open>0 && "There are "+l.permits.open+" open building permit(s) on the property, which may indicate incomplete work and could complicate financing or insurance.",
+      "Comparable sales analysis of "+COMPARABLES.length+" recently sold properties in the area shows an average price per square foot of $"+ca.avgPSF+", supporting a base valuation of $"+ca.baseRaw.toLocaleString()+" before risk adjustments.",
+      MARKET.priceChangeYoY<0 && "Area home prices have declined "+MARKET.priceChangeYoY+"% year-over-year, with "+MARKET.monthlyInventory+" months of inventory indicating a buyer-favorable market.",
+      "The county tax assessed value is $"+l.taxAssessed.toLocaleString()+", which is "+Math.abs(((l.price/l.taxAssessed-1)*100)).toFixed(1)+"% "+(l.price>l.taxAssessed?"above":"below")+" the current list price.",
+      l.previousListings>=2 && "The property has been listed "+(l.previousListings+1)+" separate times, suggesting previous market rejection at higher price points.",
+    ].filter(Boolean);
+
+    return (
+      <div className="gradient-bg min-h-screen">
+        {/* EDITOR TOOLBAR */}
+        <div className="no-print" style={{background:"#1e293b",color:"#fff",padding:"12px 0",position:"sticky",top:0,zIndex:100}}>
+          <div style={{maxWidth:900,margin:"0 auto",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <button onClick={()=>setStep("analysis")} style={{background:"none",border:"none",color:"#93c5fd",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+                <ChevLeft c="#93c5fd"/> Back to Analysis
+              </button>
+              <span style={{color:"#475569"}}>|</span>
+              <span style={{fontSize:13,color:"#94a3b8"}}>📄 Residential Sale & Purchase Contract Editor</span>
+            </div>
+            <button onClick={handlePrint}
+              style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 20px",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+              <PrintIcon/> Print / Save as PDF
+            </button>
+          </div>
+        </div>
+
+        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+
+          {/* ═══ EDITOR PANEL 0: OFFER PRICE ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20,background:"linear-gradient(135deg,#eff6ff,#f0fdf4)",border:"1px solid #93c5fd"}}>
+            {sectHead("🎯","Your Offer Price")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,alignItems:"end"}}>
+              <div>
+                <label style={lbl}>Offer Amount ($)</label>
+                <input type="number" value={manualOfferPrice > 0 ? manualOfferPrice : of.rec}
+                  onChange={e=>setManualOfferPrice(+e.target.value)}
+                  style={{...fld,fontSize:18,fontWeight:700,padding:"12px 14px",borderColor:"#3b82f6"}}/>
+                <p style={{fontSize:11,color:"#6b7280",margin:"6px 0 0"}}>
+                  AI Suggested: <strong style={{color:"#2563eb"}}>${of.rec.toLocaleString()}</strong> (Range: ${of.lo.toLocaleString()} — ${of.hi.toLocaleString()})
+                </p>
+              </div>
+              <div>
+                <div style={{background:"#fff",borderRadius:8,padding:14,border:"1px solid #e5e7eb"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
+                    <span style={{color:"#6b7280"}}>List Price:</span>
+                    <span style={{textDecoration:"line-through",color:"#ef4444"}}>${l.price.toLocaleString()}</span>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
+                    <span style={{color:"#6b7280"}}>Your Offer:</span>
+                    <span style={{fontWeight:700,color:"#111827"}}>${offerPrice.toLocaleString()}</span>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+                    <span style={{color:"#6b7280"}}>Savings:</span>
+                    <span style={{fontWeight:600,color:offerSave>=0?"#16a34a":"#dc2626"}}>${offerSave.toLocaleString()} ({offerSavePct}%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {manualOfferPrice > 0 && manualOfferPrice !== of.rec && (
+              <div style={{marginTop:12,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:12,color:"#6b7280"}}>Using your manual offer price.</span>
+                <button onClick={()=>setManualOfferPrice(0)} style={{background:"none",border:"none",color:"#2563eb",fontSize:12,cursor:"pointer",textDecoration:"underline"}}>
+                  Reset to AI suggestion (${of.rec.toLocaleString()})
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ═══ EDITOR PANEL 1: BUYER ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("👤","Buyer Information")}
+            <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:12,marginBottom:16}}>
+              <p style={{fontSize:12,color:"#1e40af",margin:0,lineHeight:1.5}}>
+                <strong>Save on commission:</strong> This contract is designed so you can submit an offer directly to the seller or listing agent without needing your own buyer's agent. If you do have a buyer's agent, toggle the option below to include their information.
+              </p>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              {[
+                {label:"Buyer Full Legal Name(s)",key:"name",ph:"John A. Smith and Jane B. Smith"},
+                {label:"Current Address",key:"address",ph:"123 Current St"},
+                {label:"City",key:"city",ph:"Tampa"},
+                {label:"State",key:"state",ph:"FL"},
+                {label:"ZIP",key:"zip",ph:"33601"},
+                {label:"Phone",key:"phone",ph:"(813) 555-0100"},
+                {label:"Email",key:"email",ph:"buyer@email.com"},
+              ].map(f=>(
+                <div key={f.key}>
+                  <label style={lbl}>{f.label}</label>
+                  <input value={buyerInfo[f.key]} onChange={e=>setBuyerInfo({...buyerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
+                </div>
+              ))}
+            </div>
+
+            {/* Optional Agent Toggle */}
+            <div style={{marginTop:20,padding:14,background:hasBuyerAgent?"#f0fdf4":"#f9fafb",borderRadius:8,border:"1px solid "+(hasBuyerAgent?"#bbf7d0":"#e5e7eb")}}>
+              <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,fontWeight:600,color:hasBuyerAgent?"#166534":"#6b7280"}}>
+                <input type="checkbox" checked={hasBuyerAgent} onChange={e=>setHasBuyerAgent(e.target.checked)} style={{accentColor:"#16a34a"}}/>
+                I have a Buyer's Agent (optional)
+              </label>
+              {!hasBuyerAgent && <p style={{fontSize:11,color:"#9ca3af",margin:"6px 0 0 26px"}}>Leave unchecked if you are representing yourself. You may save 2.5-3% in buyer agent commission.</p>}
+            </div>
+            {hasBuyerAgent && (
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,padding:14,background:"#f9fafb",borderRadius:8}}>
+                {[
+                  {label:"Agent Name",key:"agent",ph:"Licensed agent name"},
+                  {label:"Agent License #",key:"agentLicense",ph:"SL3XXXXXX"},
+                  {label:"Agent Phone",key:"agentPhone",ph:"(813) 555-0200"},
+                  {label:"Agent Email",key:"agentEmail",ph:"agent@brokerage.com"},
+                  {label:"Brokerage Name",key:"brokerage",ph:"ABC Realty, Inc."},
+                  {label:"Brokerage License #",key:"brokerageLicense",ph:"CQ10XXXXX"},
+                ].map(f=>(
+                  <div key={f.key}>
+                    <label style={lbl}>{f.label}</label>
+                    <input value={buyerInfo[f.key]} onChange={e=>setBuyerInfo({...buyerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("🏠","Seller Information")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              {[
+                {label:"Seller Full Legal Name(s)",key:"name",ph:"Current property owner(s)"},
+                {label:"Seller Address",key:"address",ph:"(if known)"},
+                {label:"Listing Agent Name",key:"agent",ph:"Listing agent name"},
+                {label:"Listing Agent License #",key:"agentLicense",ph:"SL3XXXXXX"},
+                {label:"Listing Agent Phone",key:"agentPhone",ph:"(813) 555-0300"},
+                {label:"Listing Brokerage",key:"brokerage",ph:"XYZ Realty, LLC"},
+              ].map(f=>(
+                <div key={f.key}>
+                  <label style={lbl}>{f.label}</label>
+                  <input value={sellerInfo[f.key]} onChange={e=>setSellerInfo({...sellerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 2: PROPERTY & LEGAL ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("📋","Property & Legal Description")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              <div><label style={lbl}>County</label><input value={countyName} onChange={e=>setCountyName(e.target.value)} placeholder="Hillsborough" style={fld}/></div>
+              <div><label style={lbl}>Tax Parcel ID / Folio # <Tip id="taxParcelId" text={TIPS.taxParcelId}/></label><input value={taxParcelId} onChange={e=>setTaxParcelId(e.target.value)} placeholder="e.g. A-12-29-18-3TK-000001-00001.0" style={fld}/></div>
+            </div>
+            <div style={{marginTop:14}}>
+              <label style={lbl}>Legal Description <Tip id="legalDescription" text={TIPS.legalDescription}/></label>
+              <textarea value={legalDescription} onChange={e=>setLegalDescription(e.target.value)} placeholder="Lot 12, Block 3, SUNSET PARK SUBDIVISION, as recorded in Plat Book 45, Page 78, of the Public Records of Hillsborough County, Florida."
+                style={{...fld,minHeight:60,resize:"vertical"}}/>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 3: FINANCIAL TERMS ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("💰","Financial Terms")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+              <div><label style={lbl}>Earnest Money Deposit ($) <Tip id="earnestMoney" text={TIPS.earnestMoney}/></label><input type="number" value={earnestMoney} onChange={e=>setEarnestMoney(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Additional Deposit ($) <Tip id="additionalDeposit" text={TIPS.additionalDeposit}/></label><input type="number" value={additionalDeposit} onChange={e=>setAdditionalDeposit(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Deposit Deadline (days) <Tip id="depositDeadline" text={TIPS.depositDeadline}/></label><input type="number" value={depositDeadline} onChange={e=>setDepositDeadline(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Escrow / Title Agent <Tip id="escrowAgent" text={TIPS.escrowAgent}/></label><input value={escrowAgent} onChange={e=>setEscrowAgent(e.target.value)} placeholder="Title company name" style={fld}/></div>
+              <div><label style={lbl}>Financing Type <Tip id="financingType" text={TIPS.financingType}/></label>
+                <select value={financingType} onChange={e=>setFinancingType(e.target.value)} style={fld}>
+                  <option>Conventional</option><option>FHA</option><option>VA</option><option>USDA</option><option>Cash (No Financing)</option><option>Seller Financing</option><option>Assumption</option>
+                </select>
+              </div>
+              <div><label style={lbl}>Loan Term (years) <Tip id="loanTerm" text={TIPS.loanTerm}/></label><input type="number" value={loanTerm} onChange={e=>setLoanTerm(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Interest Rate Cap (%) <Tip id="interestRateCap" text={TIPS.interestRateCap}/></label><input type="number" step="0.125" value={interestRateCap} onChange={e=>setInterestRateCap(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Seller Concessions ($) <Tip id="sellerConcessions" text={TIPS.sellerConcessions}/></label><input type="number" value={sellerConcessions} onChange={e=>setSellerConcessions(+e.target.value)} style={fld}/></div>
+              <div style={{display:"flex",alignItems:"end",gap:8,paddingBottom:4}}>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={preApproval} onChange={e=>setPreApproval(e.target.checked)} style={{accentColor:"#2563eb"}}/>Pre-Approval Letter <Tip id="preApproval" text={TIPS.preApproval}/>
+                </label>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginTop:14}}>
+              <div><label style={lbl}>Closing Period (days) <Tip id="closingDays" text={TIPS.closingDays}/></label><input type="number" value={closingDays} onChange={e=>setClosingDays(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Offer Expires (days) <Tip id="offerExpDays" text={TIPS.offerExpDays}/></label><input type="number" value={offerExpDays} onChange={e=>setOfferExpDays(+e.target.value)} style={fld}/></div>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 4: TITLE, DEED, CLOSING ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("📜","Title, Deed & Closing")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+              <div><label style={lbl}>Title Company <Tip id="titleCompany" text={TIPS.titleCompany}/></label><input value={titleCompany} onChange={e=>setTitleCompany(e.target.value)} placeholder="Name of title company" style={fld}/></div>
+              <div><label style={lbl}>Title Insurance Paid By <Tip id="titlePaidBy" text={TIPS.titlePaidBy}/></label>
+                <select value={titlePaidBy} onChange={e=>setTitlePaidBy(e.target.value)} style={fld}><option>Buyer</option><option>Seller</option><option>Split 50/50</option></select>
+              </div>
+              <div><label style={lbl}>Deed Type <Tip id="deedType" text={TIPS.deedType}/></label>
+                <select value={deedType} onChange={e=>setDeedType(e.target.value)} style={fld}><option>Warranty Deed</option><option>Special Warranty Deed</option><option>Quitclaim Deed</option></select>
+              </div>
+              <div><label style={lbl}>Possession <Tip id="possessionAt" text={TIPS.possessionAt}/></label>
+                <select value={possessionAt} onChange={e=>setPossessionAt(e.target.value)} style={fld}><option>At Closing</option><option>Day After Closing</option><option>3 Days After Closing</option><option>Other (specify in Additional Terms)</option></select>
+              </div>
+              <div><label style={lbl}>Dispute Resolution <Tip id="disputeResolution" text={TIPS.disputeResolution}/></label>
+                <select value={disputeResolution} onChange={e=>setDisputeResolution(e.target.value)} style={fld}><option>Mediation then Litigation</option><option>Mediation then Arbitration</option><option>Litigation Only</option></select>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:8,justifyContent:"center"}}>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={surveyRequired} onChange={e=>setSurveyRequired(e.target.checked)} style={{accentColor:"#2563eb"}}/>Survey Required <Tip id="surveyRequired" text={TIPS.surveyRequired}/>
+                </label>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={walkthrough} onChange={e=>setWalkthrough(e.target.checked)} style={{accentColor:"#2563eb"}}/>Pre-Closing Walk-Through <Tip id="walkthrough" text={TIPS.walkthrough}/>
+                </label>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={assignable} onChange={e=>setAssignable(e.target.checked)} style={{accentColor:"#2563eb"}}/>Contract Assignable <Tip id="assignable" text={TIPS.assignable}/>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 5: PERSONAL PROPERTY & WARRANTY ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("🏷️","Personal Property & Home Warranty")}
+            <div>
+              <label style={lbl}>Personal Property Included with Sale <Tip id="personalProperty" text={TIPS.personalProperty}/></label>
+              <textarea value={personalPropertyIncluded} onChange={e=>setPersonalPropertyIncluded(e.target.value)}
+                style={{...fld,minHeight:50,resize:"vertical"}}/>
+            </div>
+            <div style={{marginTop:14}}>
+              <label style={lbl}>Items Excluded from Sale</label>
+              <textarea value={personalPropertyExcluded} onChange={e=>setPersonalPropertyExcluded(e.target.value)} placeholder="e.g. Dining room chandelier, detached storage shed contents"
+                style={{...fld,minHeight:40,resize:"vertical"}}/>
+            </div>
+            <div style={{display:"flex",gap:16,alignItems:"center",marginTop:14}}>
+              <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                <input type="checkbox" checked={homeWarranty} onChange={e=>setHomeWarranty(e.target.checked)} style={{accentColor:"#2563eb"}}/>Home Warranty <Tip id="homeWarranty" text={TIPS.homeWarranty}/>
+              </label>
+              {homeWarranty && <>
+                <div><label style={{...lbl,marginBottom:0,fontSize:11}}>Paid By</label>
+                  <select value={homeWarrantyPaidBy} onChange={e=>setHomeWarrantyPaidBy(e.target.value)} style={{...fld,width:120,padding:"4px 8px"}}>
+                    <option>Seller</option><option>Buyer</option>
+                  </select>
+                </div>
+                <div><label style={{...lbl,marginBottom:0,fontSize:11}}>Amount ($)</label>
+                  <input type="number" value={homeWarrantyAmount} onChange={e=>setHomeWarrantyAmount(+e.target.value)} style={{...fld,width:80,padding:"4px 8px"}}/>
+                </div>
+              </>}
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 6: CONTINGENCIES ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("⚖️","Contingencies")}
+            <p style={{fontSize:12,color:"#6b7280",margin:"-8px 0 16px"}}>Toggle on/off and adjust timeframes. Enabled items appear in the printed contract.</p>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {contingencies.map((c,i)=>(
+                <div key={c.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:c.enabled?"#f0fdf4":"#f9fafb",borderRadius:8,border:"1px solid "+(c.enabled?"#bbf7d0":"#e5e7eb")}}>
+                  <input type="checkbox" checked={c.enabled} onChange={e=>{
+                    const nc=[...contingencies]; nc[i]={...nc[i],enabled:e.target.checked}; setContingencies(nc);
+                  }} style={{accentColor:"#16a34a",flexShrink:0}}/>
+                  <span style={{fontSize:13,fontWeight:600,color:c.enabled?"#166534":"#6b7280",flex:1}}>{c.label}</span>
+                  <div style={{display:"flex",alignItems:"center",gap:4}}>
+                    <input type="number" value={c.days} onChange={e=>{
+                      const nc=[...contingencies]; nc[i]={...nc[i],days:+e.target.value}; setContingencies(nc);
+                    }} style={{width:50,border:bl,borderRadius:6,padding:"4px 8px",fontSize:12,textAlign:"center"}}/>
+                    <span style={{fontSize:11,color:"#9ca3af"}}>days</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <h4 style={{fontSize:12,fontWeight:600,color:"#374151",marginTop:16,marginBottom:8}}>Add Custom Contingency</h4>
+            {customContingencies.map((cc,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:8}}>
+                <textarea value={cc} onChange={e=>{const nc=[...customContingencies];nc[i]=e.target.value;setCustomContingencies(nc);}}
+                  style={{flex:1,border:bl,borderRadius:8,padding:"8px 12px",fontSize:12,minHeight:50,resize:"vertical"}}/>
+                <button onClick={()=>setCustomContingencies(customContingencies.filter((_,j)=>j!==i))}
+                  style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:6,padding:"6px 10px",fontSize:12,cursor:"pointer",fontWeight:600}}>Remove</button>
+              </div>
+            ))}
+            <div style={{display:"flex",gap:8}}>
+              <input value={newCustom} onChange={e=>setNewCustom(e.target.value)} placeholder="Type a custom contingency..."
+                style={{flex:1,border:bl,borderRadius:8,padding:"8px 12px",fontSize:13,boxSizing:"border-box"}}/>
+              <button onClick={()=>{if(newCustom.trim()){setCustomContingencies([...customContingencies,newCustom.trim()]);setNewCustom("");}}}
+                style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 16px",fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>+ Add</button>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 7: ADDITIONAL TERMS ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("📝","Additional Terms & Special Provisions")}
+            <textarea value={additionalTerms} onChange={e=>setAdditionalTerms(e.target.value)} placeholder="Seller concessions toward closing costs, repair credits, specific move-out dates, appliance warranties, or any other special provisions..."
+              style={{...fld,minHeight:80,resize:"vertical"}}/>
+          </div>
+
+          {/* ═══════════════════════════════════════════════════════════════════
+             PRINTABLE CONTRACT — BROKER-QUALITY
+             ═══════════════════════════════════════════════════════════════════ */}
+          <div className="card print-page" style={{padding:"48px 48px",lineHeight:1.7,fontSize:12,color:"#374151"}}>
+
+            {/* HEADER */}
+            <div style={{textAlign:"center",marginBottom:24,borderBottom:"2px solid #1e40af",paddingBottom:16}}>
+              <h1 style={{fontSize:20,fontWeight:700,color:"#1e40af",margin:0,letterSpacing:1}}>RESIDENTIAL SALE AND PURCHASE CONTRACT</h1>
+              <p style={{fontSize:11,color:"#6b7280",margin:"4px 0 0"}}>State of Florida | {countyName || "___________"} County | Date: {today}</p>
+              <p style={{fontSize:10,color:"#9ca3af",margin:"2px 0 0"}}>Generated by PropertyAgent Pro — This document is intended to be reviewed by a licensed real estate attorney prior to execution.</p>
+            </div>
+
+            {/* I. PARTIES */}
+            {pSect("I. PARTIES TO THIS CONTRACT")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:16}}>
+              <div style={{background:"#f9fafb",borderRadius:8,padding:14}}>
+                <p style={{fontSize:11,fontWeight:700,color:"#1e40af",margin:"0 0 6px"}}>BUYER</p>
+                <p style={{margin:0}}><strong>{buyerInfo.name || "________________________"}</strong></p>
+                <p style={{margin:0,color:"#6b7280"}}>{buyerInfo.address ? buyerInfo.address+", "+buyerInfo.city+", "+buyerInfo.state+" "+buyerInfo.zip : "________________________"}</p>
+                <p style={{margin:0,color:"#6b7280"}}>{buyerInfo.phone || "(___) ___-____"} | {buyerInfo.email || "________________________"}</p>
+                {hasBuyerAgent && buyerInfo.agent ? <p style={{margin:"6px 0 0",fontSize:11,color:"#6b7280"}}>Agent: {buyerInfo.agent} (Lic# {buyerInfo.agentLicense || "______"}) | {buyerInfo.agentPhone}</p> : <p style={{margin:"6px 0 0",fontSize:11,color:"#6b7280",fontStyle:"italic"}}>Buyer is self-represented (no buyer's agent)</p>}
+                {hasBuyerAgent && buyerInfo.brokerage && <p style={{margin:0,fontSize:11,color:"#6b7280"}}>Brokerage: {buyerInfo.brokerage} (Lic# {buyerInfo.brokerageLicense || "______"})</p>}
+              </div>
+              <div style={{background:"#f9fafb",borderRadius:8,padding:14}}>
+                <p style={{fontSize:11,fontWeight:700,color:"#1e40af",margin:"0 0 6px"}}>SELLER</p>
+                <p style={{margin:0}}><strong>{sellerInfo.name || "________________________"}</strong></p>
+                <p style={{margin:0,color:"#6b7280"}}>{sellerInfo.address || "________________________"}</p>
+                {sellerInfo.agent && <p style={{margin:"6px 0 0",fontSize:11,color:"#6b7280"}}>Listing Agent: {sellerInfo.agent} (Lic# {sellerInfo.agentLicense || "______"}) | {sellerInfo.agentPhone}</p>}
+                {sellerInfo.brokerage && <p style={{margin:0,fontSize:11,color:"#6b7280"}}>Brokerage: {sellerInfo.brokerage}</p>}
+              </div>
+            </div>
+
+            {/* II. PROPERTY DESCRIPTION */}
+            {pSect("II. PROPERTY DESCRIPTION")}
+            <p>Buyer hereby offers to purchase the following described real property:</p>
+            <div style={{background:"#f9fafb",borderRadius:8,padding:14,marginBottom:8}}>
+              <p style={{margin:0}}><strong>Street Address:</strong> {l.address}, {l.city}, {l.state} {l.zip}</p>
+              <p style={{margin:0}}><strong>County:</strong> {countyName || "___________"} | <strong>Tax Parcel ID:</strong> {taxParcelId || "________________________"}</p>
+              <p style={{margin:0}}><strong>Property Type:</strong> {l.type} | <strong>Year Built:</strong> {l.yearBuilt} | <strong>Living Area:</strong> {l.sqft.toLocaleString()} sq ft | <strong>Bedrooms:</strong> {l.beds} | <strong>Bathrooms:</strong> {l.baths} | <strong>Lot Size:</strong> {l.lotSize>0?l.lotSize+" acres":"N/A (Condo)"}</p>
+              <p style={{margin:"6px 0 0"}}><strong>Legal Description:</strong> {legalDescription || "As recorded in the public records of "+countyName+" County, Florida. Full legal description to be provided by title company and incorporated herein by reference."}</p>
+            </div>
+
+            {/* III. PURCHASE PRICE & FINANCING */}
+            {pSect("III. PURCHASE PRICE & FINANCING")}
+            <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:16,marginBottom:8}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+                <p style={{margin:0}}><strong>A. Purchase Price:</strong> <span style={{fontSize:15,fontWeight:700,color:"#1e40af"}}>${offerPrice.toLocaleString()}</span></p>
+                <p style={{margin:0}}><strong>B. List Price:</strong> <span style={{textDecoration:"line-through",color:"#ef4444"}}>${l.price.toLocaleString()}</span></p>
+                <p style={{margin:0}}><strong>C. Financing Type:</strong> {financingType}</p>
+                <p style={{margin:0}}><strong>D. Loan Amount:</strong> ${loanAmt.toLocaleString()}</p>
+                <p style={{margin:0}}><strong>E. Down Payment:</strong> ${form.downPayment.toLocaleString()} ({((form.downPayment/offerPrice)*100).toFixed(1)}%)</p>
+                <p style={{margin:0}}><strong>F. Loan Term:</strong> {loanTerm} years</p>
+                <p style={{margin:0}}><strong>G. Interest Rate Not to Exceed:</strong> {interestRateCap}% per annum</p>
+                <p style={{margin:0}}><strong>H. Pre-Approval:</strong> {preApproval?"Attached / to be provided within 5 days":"Not attached"}</p>
+                {sellerConcessions>0 && <p style={{margin:0}}><strong>I. Seller Concessions:</strong> ${sellerConcessions.toLocaleString()} toward Buyer's closing costs</p>}
+              </div>
+            </div>
+            {financingType!=="Cash (No Financing)" && <p>Buyer shall apply for financing within 5 calendar days of the Effective Date and use good faith and diligent effort to obtain approval. If Buyer is unable to obtain a firm loan commitment within the time period specified in the Financing Contingency below, Buyer may terminate this Contract and receive a full refund of the Earnest Money Deposit.</p>}
+
+            {/* IV. EARNEST MONEY / ESCROW */}
+            {pSect("IV. EARNEST MONEY DEPOSIT & ESCROW")}
+            <p><strong>A. Initial Deposit:</strong> ${earnestMoney.toLocaleString()} to be delivered to Escrow Agent within {depositDeadline} calendar day(s) of the Effective Date.</p>
+            {additionalDeposit>0 && <p><strong>B. Additional Deposit:</strong> ${additionalDeposit.toLocaleString()} to be delivered within 10 calendar days of the Effective Date.</p>}
+            <p><strong>{additionalDeposit>0?"C":"B"}. Escrow Agent:</strong> {escrowAgent || "________________________ (to be designated by ________________________)"}</p>
+            <p>Escrow Agent shall hold all deposits in a non-interest-bearing escrow account in accordance with Florida Statute 475.25. Upon closing, the Earnest Money Deposit shall be applied to the purchase price. In the event of a dispute regarding the Earnest Money Deposit, Escrow Agent shall comply with applicable Florida law, including but not limited to interpleader action, and shall not be liable to either party for any act or omission in handling the disputed funds.</p>
+
+            {/* V. TITLE & SURVEY */}
+            {pSect("V. TITLE EVIDENCE & SURVEY")}
+            <p><strong>A. Title Evidence:</strong> {titlePaidBy} shall, at {titlePaidBy}'s expense, obtain a title insurance commitment from {titleCompany || "a Florida-licensed title insurance company"} within 15 calendar days of the Effective Date. Seller shall convey marketable and insurable title to the Property by {deedType}, subject only to matters acceptable to Buyer and Buyer's lender.</p>
+            <p><strong>B. Title Defects:</strong> If title defects are found that render title unmarketable or uninsurable, Seller shall have 30 calendar days from notice to cure such defects. If Seller is unable to cure title defects within such period, Buyer may: (i) accept title as-is; (ii) extend the cure period; or (iii) terminate this Contract with full refund of the Earnest Money Deposit.</p>
+            {surveyRequired && <p><strong>C. Survey:</strong> Buyer may, at Buyer's expense, obtain a current survey of the Property. If the survey reveals encroachments, boundary line disputes, easements, or other conditions unacceptable to Buyer, the matter shall be treated as a title defect.</p>}
+            <p><strong>{surveyRequired?"D":"C"}. Deed:</strong> At closing, Seller shall deliver a duly executed {deedType} conveying the Property to Buyer, free and clear of all liens, encumbrances, and assessments except those specifically accepted by Buyer.</p>
+
+            {/* VI. CONTINGENCIES */}
+            {pSect("VI. CONTINGENCIES")}
+            <p>This Contract is subject to the following contingencies. Failure to satisfy any contingency within the specified period shall entitle the Buyer to terminate this Contract by written notice and receive a full refund of the Earnest Money Deposit, unless otherwise specified herein.</p>
+            {activeContingencies.map((c,i)=>(
+              <div key={c.id} style={{marginBottom:14,paddingLeft:14,borderLeft:"3px solid #bfdbfe"}}>
+                <p style={{fontWeight:600,color:"#111827",margin:"0 0 2px"}}>{i+1}. {c.label} — {c.days} Calendar Days</p>
+                <p style={{margin:0,color:"#4b5563"}}>{c.text.replace(/{days}/g,c.days).replace(/{price}/g,"$"+offerPrice.toLocaleString())}</p>
+              </div>
+            ))}
+            {customContingencies.map((cc,i)=>(
+              <div key={"cc"+i} style={{marginBottom:14,paddingLeft:14,borderLeft:"3px solid #bfdbfe"}}>
+                <p style={{fontWeight:600,color:"#111827",margin:"0 0 2px"}}>{activeContingencies.length+i+1}. Additional Contingency</p>
+                <p style={{margin:0,color:"#4b5563"}}>{cc}</p>
+              </div>
+            ))}
+
+            {/* VII. PERSONAL PROPERTY */}
+            {pSect("VII. PERSONAL PROPERTY & FIXTURES")}
+            <p><strong>A. Included:</strong> The following items, if existing on the Property as of the date of this offer, are included in the purchase price and shall be transferred to Buyer at closing free and clear of all liens: {personalPropertyIncluded || "________________________"}</p>
+            {personalPropertyExcluded && <p><strong>B. Excluded:</strong> The following items are specifically excluded from this sale and shall be retained by Seller: {personalPropertyExcluded}</p>}
+            <p>All items included herein shall be in working condition at the time of closing, ordinary wear and tear excepted.</p>
+
+            {/* VIII. PRORATIONS & CLOSING COSTS */}
+            {pSect("VIII. PRORATIONS, ADJUSTMENTS & CLOSING COSTS")}
+            <p>The following items shall be prorated as of the day before closing and adjusted accordingly:</p>
+            <p><strong>A.</strong> Real property taxes for the current year shall be prorated based on the current year's tax bill (or prior year if current is unavailable). County: {countyName} | Annual Tax: ${l.annualTax.toLocaleString()} ({l.taxYear}).</p>
+            {l.hoa>0 && <p><strong>B.</strong> Homeowner/Condominium Association dues and any pending special assessments shall be prorated. Current HOA: ${l.hoa.toLocaleString()}/month.</p>}
+            <p><strong>{l.hoa>0?"C":"B"}.</strong> Utility deposits and prepaid utility charges shall be adjusted at closing.</p>
+            <p><strong>Florida-Specific Closing Costs:</strong> Documentary stamp tax on the deed shall be paid by Seller per Florida law. Documentary stamp tax and intangible tax on the mortgage/note shall be paid by Buyer. Title insurance premium shall be paid by {titlePaidBy}. Recording fees shall be paid by the party for whose benefit the instrument is recorded.</p>
+
+            {/* IX. CLOSING & POSSESSION */}
+            {pSect("IX. CLOSING & POSSESSION")}
+            <p><strong>A. Closing Date:</strong> On or before {closingDays} calendar days from the Effective Date of this Contract, or such other date as may be mutually agreed upon in writing by the parties.</p>
+            <p><strong>B. Closing Location:</strong> At the offices of the Escrow Agent / Title Company, or by remote / mail-away closing as agreed by the parties. Remote online notarization is permitted under Florida law.</p>
+            <p><strong>C. Possession:</strong> Buyer shall receive possession of the Property: <strong>{possessionAt}</strong>. If Seller fails to deliver possession on the agreed date, Seller shall pay Buyer a per diem amount equal to the Buyer's projected daily housing cost for each day of delay.</p>
+            {walkthrough && <p><strong>D. Pre-Closing Walk-Through:</strong> Buyer shall have the right to conduct a walk-through inspection of the Property within 24 hours prior to closing to verify that the Property is in the condition required by this Contract, that all repairs have been completed, and that all included personal property remains on the premises.</p>}
+
+            {/* X. SELLER DISCLOSURES */}
+            {pSect("X. SELLER DISCLOSURES")}
+            <p><strong>A. Seller's Property Disclosure:</strong> Seller shall provide a written disclosure of all known facts that materially affect the value of the Property that are not readily observable, in accordance with the Florida Supreme Court ruling in <em>Johnson v. Davis</em>, 480 So. 2d 625 (Fla. 1985). Seller's failure to disclose known material defects may constitute fraud.</p>
+            <p><strong>B. Code Violations & Open Permits:</strong> Seller represents that there are {l.permits.open>0?l.permits.open+" known open permit(s)":"no known open permits or code violations"} on the Property. Seller shall disclose all known code violations, open or expired building permits, and pending governmental actions.</p>
+            {l.yearBuilt<1978 && <>
+              <p><strong>C. Lead-Based Paint Disclosure (Federal):</strong> The Property was built prior to 1978. In accordance with 42 U.S.C. 4852d and 24 CFR Part 35, Seller shall provide Buyer with any known information regarding the presence of lead-based paint or lead-based paint hazards, the EPA pamphlet "Protect Your Family From Lead in Your Home," and a 10-day period to conduct a lead-based paint inspection at Buyer's expense.</p>
+            </>}
+            <p><strong>{l.yearBuilt<1978?"D":"C"}. Homeowners/Condominium Association:</strong> {l.hoa>0?"The Property is subject to a mandatory association. Seller shall provide all governing documents, financial statements, bylaws, rules and regulations, and disclosure of pending assessments. Per Florida Statute 720.401, Buyer shall have 3 calendar days after receipt of HOA disclosure documents to cancel this Contract.":"Seller represents that the Property is not subject to a mandatory homeowners or condominium association, or if it is, Seller shall disclose and provide all governing documents."}</p>
+
+            {/* XI. FLORIDA STATUTORY DISCLOSURES */}
+            {pSect("XI. FLORIDA STATUTORY DISCLOSURES")}
+            <div style={{background:"#fefce8",border:"1px solid #fde68a",borderRadius:8,padding:14,marginBottom:12}}>
+              <p style={{fontWeight:700,margin:"0 0 6px",color:"#854d0e"}}>RADON GAS DISCLOSURE (Florida Statute 404.056(5))</p>
+              <p style={{margin:0,fontSize:11,fontStyle:"italic"}}>RADON GAS: Radon is a naturally occurring radioactive gas that, when it has accumulated in a building in sufficient quantities, may present health risks to persons who are exposed to it over time. Levels of radon that exceed federal and state guidelines have been found in buildings in Florida. Additional information regarding radon and radon testing may be obtained from your county health department.</p>
+            </div>
+            <div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:8,padding:14,marginBottom:12}}>
+              <p style={{fontWeight:700,margin:"0 0 6px",color:"#166534"}}>ENERGY EFFICIENCY DISCLOSURE (Florida Statute 553.996)</p>
+              <p style={{margin:0,fontSize:11,fontStyle:"italic"}}>Buyer is hereby notified that Buyer may have the Property inspected for energy efficiency. Buyer is encouraged to obtain an energy efficiency rating on the Property.</p>
+            </div>
+            <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:14,marginBottom:12}}>
+              <p style={{fontWeight:700,margin:"0 0 6px",color:"#1e40af"}}>PROPERTY TAX DISCLOSURE (Florida Statute 689.261)</p>
+              <p style={{margin:0,fontSize:11,fontStyle:"italic"}}>BUYER SHOULD NOT RELY ON THE SELLER'S CURRENT PROPERTY TAXES AS THE AMOUNT OF PROPERTY TAXES THAT THE BUYER MAY BE OBLIGATED TO PAY IN THE YEAR SUBSEQUENT TO PURCHASE. A CHANGE OF OWNERSHIP OR PROPERTY IMPROVEMENTS TRIGGERS REASSESSMENTS OF THE PROPERTY THAT COULD RESULT IN HIGHER PROPERTY TAXES. IF YOU HAVE ANY QUESTIONS CONCERNING VALUATION, CONTACT THE COUNTY PROPERTY APPRAISER'S OFFICE FOR INFORMATION.</p>
+            </div>
+            <p><strong>Flood Zone:</strong> The Property is located in FEMA Flood Zone <strong>{l.floodZone}</strong> ({l.floodRisk} risk), FEMA Panel {l.femaPanel}. {l.floodRisk==="High"?"Federal law requires flood insurance for properties in Special Flood Hazard Areas when financed by a federally backed mortgage.":l.floodRisk==="Moderate"?"Flood insurance is recommended but may not be required by lender.":"No flood insurance is required at this time."} Buyer is advised to verify flood zone status independently, as FEMA maps may be revised. Per Florida Statute 627.7073, Buyer may also inquire regarding sinkhole activity in this area.</p>
+            <p><strong>FIRPTA Notice:</strong> If Seller is a "foreign person" as defined by the Foreign Investment in Real Property Tax Act (FIRPTA), Buyer may be required to withhold up to 15% of the gross sales price at closing and remit to the IRS, unless an exemption applies. Seller shall notify Buyer prior to closing if Seller is a foreign person.</p>
+            <p><strong>Agency Disclosure (Florida Statute 475.278):</strong> The parties acknowledge that the brokerage relationship(s) in this transaction have been disclosed as required by Florida law. {hasBuyerAgent ? "Buyer's broker is acting as: [ ] Transaction Broker [ ] Single Agent [ ] No Brokerage Relationship." : "Buyer is self-represented and is not working with a licensed real estate agent or broker. Buyer acknowledges that the listing agent/broker represents the Seller's interests."} Seller's broker is acting as: [ ] Transaction Broker [ ] Single Agent [ ] No Brokerage Relationship.</p>
+
+            {/* XII. DEFAULT & REMEDIES */}
+            {pSect("XII. DEFAULT & REMEDIES")}
+            <p><strong>A. Buyer Default:</strong> If Buyer fails to perform any obligation under this Contract within the time specified, after written notice and a reasonable cure period, Seller may elect to: (i) retain the Earnest Money Deposit as agreed-upon liquidated damages, which shall be Seller's sole and exclusive remedy; or (ii) seek specific performance of this Contract.</p>
+            <p><strong>B. Seller Default:</strong> If Seller fails to perform any obligation under this Contract within the time specified, after written notice and a reasonable cure period, Buyer may elect to: (i) receive a full refund of the Earnest Money Deposit; (ii) seek specific performance; or (iii) seek damages from Seller.</p>
+            <p><strong>C. Dispute Resolution:</strong> In the event of a dispute arising out of this Contract, the parties agree to first attempt resolution through <strong>{disputeResolution.split(" then ")[0].toLowerCase()}</strong>. If mediation is unsuccessful, the parties may proceed to <strong>{disputeResolution.split(" then ")[1]?disputeResolution.split(" then ")[1].toLowerCase():"litigation"}</strong>. The prevailing party in any litigation or arbitration shall be entitled to recover reasonable attorney's fees and costs from the non-prevailing party.</p>
+
+            {/* XIII. STANDARD PROVISIONS */}
+            {pSect("XIII. STANDARD PROVISIONS")}
+            <p><strong>A. Time is of the Essence:</strong> Time is of the essence for all dates and deadlines in this Contract.</p>
+            <p><strong>B. Risk of Loss:</strong> If the Property is damaged by fire or other casualty before closing, Buyer may: (i) accept the Property in its damaged condition with an assignment of insurance proceeds; or (ii) terminate this Contract with a full refund of the Earnest Money Deposit if the cost of restoration exceeds 1.5% of the purchase price.</p>
+            <p><strong>C. Assignment:</strong> This Contract {assignable?"may be assigned by Buyer to a third party upon written notice to Seller. Buyer shall remain liable under this Contract unless Seller provides a written release.":"may not be assigned by Buyer without the prior written consent of Seller."}</p>
+            <p><strong>D. Governing Law:</strong> This Contract shall be governed by and construed in accordance with the laws of the State of Florida. Venue for any action shall be in {countyName || "___________"} County, Florida.</p>
+            <p><strong>E. Entire Agreement:</strong> This Contract, together with all addenda and exhibits attached hereto, constitutes the entire agreement between the parties. No prior or contemporaneous agreements or representations shall be binding unless incorporated herein. This Contract may not be modified except by written agreement signed by all parties.</p>
+            <p><strong>F. Severability:</strong> If any provision of this Contract is held invalid or unenforceable, the remaining provisions shall continue in full force and effect.</p>
+            <p><strong>G. Counterparts & Electronic Signatures:</strong> This Contract may be executed in counterparts, each of which shall be deemed an original. Electronic signatures are valid and enforceable pursuant to the Uniform Electronic Transactions Act (UETA) and the federal E-SIGN Act.</p>
+            <p><strong>H. Notices:</strong> All notices required under this Contract shall be in writing and delivered by personal delivery, overnight courier, or email to the addresses listed in Section I above. Notice shall be deemed given upon receipt.</p>
+            <p><strong>I. Survival:</strong> Any provision of this Contract that by its nature should survive closing (including representations, warranties, indemnifications, and dispute resolution provisions) shall survive the delivery of the deed and the payment of the purchase price.</p>
+            <p><strong>J. Force Majeure:</strong> Neither party shall be liable for delay caused by acts of God, government action, natural disaster, or other events beyond the reasonable control of the parties. Deadlines affected by force majeure events shall be extended by the duration of such event.</p>
+            <p><strong>K. Fair Housing:</strong> This transaction is subject to all applicable federal, state, and local fair housing laws, including the Fair Housing Act (42 U.S.C. 3601 et seq.) and the Florida Fair Housing Act (Florida Statute 760.20-760.37).</p>
+            <p><strong>L. 1031 Exchange:</strong> Either party may structure the transaction as a tax-deferred exchange under Section 1031 of the Internal Revenue Code, provided the exchange does not delay closing, increase the other party's costs, or impose additional liability on the other party.</p>
+
+            {/* HOME WARRANTY */}
+            {homeWarranty && <>
+              {pSect("XIV. HOME WARRANTY")}
+              <p>{homeWarrantyPaidBy} shall pay for a home warranty plan not to exceed ${homeWarrantyAmount.toLocaleString()}, to be issued at closing. The home warranty shall cover major systems and appliances for a period of one (1) year from the date of closing.</p>
+            </>}
+
+            {/* OFFER PRICE JUSTIFICATION */}
+            {pSect((homeWarranty?"XV":"XIV")+". OFFER PRICE JUSTIFICATION — EXHIBIT A")}
+            <p>The offer price of <strong>${offerPrice.toLocaleString()}</strong> ({offerSavePct}% below list price of ${l.price.toLocaleString()}) is supported by the following market data and property analysis:</p>
+            {reasons.map((r,i)=>(
+              <div key={i} style={{marginBottom:8,paddingLeft:14,borderLeft:"3px solid #d1d5db"}}>
+                <p style={{margin:0}}>{i+1}. {r}</p>
+              </div>
+            ))}
+            <div style={{background:"#f9fafb",borderRadius:8,padding:14,marginTop:12,marginBottom:16}}>
+              <p style={{margin:0}}>
+                <strong>Valuation Summary:</strong> Two independent pricing methodologies were employed. The comparable sales analysis yielded ${ca.price.toLocaleString()} and the multi-factor scoring model yielded ${mf.price.toLocaleString()}.{manualOfferPrice > 0 && manualOfferPrice !== of.rec ? " The Buyer has elected an offer price of $"+offerPrice.toLocaleString()+"." : " The reconciled offer price of $"+offerPrice.toLocaleString()+" represents the midpoint of these two analyses."} Confidence level: <strong>{of.conf}</strong>.
+              </p>
+            </div>
+
+            {/* ADDITIONAL TERMS */}
+            {additionalTerms && <>
+              {pSect((homeWarranty?"XVI":"XV")+". ADDITIONAL TERMS & SPECIAL PROVISIONS")}
+              <p style={{whiteSpace:"pre-wrap"}}>{additionalTerms}</p>
+            </>}
+
+            {/* ACCEPTANCE & OFFER EXPIRATION */}
+            {pSect((homeWarranty?(additionalTerms?"XVII":"XVI"):(additionalTerms?"XVI":"XV"))+". ACCEPTANCE, COUNTEROFFER & EXPIRATION")}
+            <p><strong>A. Offer Expiration:</strong> This offer shall expire at 11:59 PM Eastern Time on the date that is {offerExpDays} calendar day(s) from the date of this Contract, unless accepted or countered in writing by Seller prior to that time.</p>
+            <p><strong>B. Effective Date:</strong> The "Effective Date" of this Contract shall be the date on which the last party signs or initials this Contract or the final counteroffer, whichever is later.</p>
+            <p><strong>C. Counteroffer:</strong> Seller may accept this offer, reject this offer, or present a written counteroffer. A counteroffer shall constitute a rejection of this original offer. Buyer shall have _______ calendar days to accept any counteroffer.</p>
+
+            {/* SIGNATURES */}
+            <div style={{borderTop:"2px solid #1e40af",paddingTop:24,marginTop:32}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:40,marginBottom:32}}>
+                <div>
+                  <p style={{fontWeight:700,color:"#1e40af",margin:"0 0 40px"}}>BUYER:</p>
+                  <div style={{borderBottom:"1px solid #111827",marginBottom:4}}/>
+                  <p style={{fontSize:11,color:"#6b7280",margin:0}}>Signature</p>
+                  <p style={{margin:"8px 0 0"}}>{buyerInfo.name || "________________________"}</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"4px 0 0"}}>Printed Name</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"8px 0 0"}}>Date: ________________________</p>
+                  <div style={{marginTop:24,borderBottom:"1px solid #111827",marginBottom:4}}/>
+                  <p style={{fontSize:11,color:"#6b7280",margin:0}}>Co-Buyer Signature (if applicable)</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"4px 0 0"}}>Printed Name: ________________________</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"4px 0 0"}}>Date: ________________________</p>
+                </div>
+                <div>
+                  <p style={{fontWeight:700,color:"#1e40af",margin:"0 0 40px"}}>SELLER:</p>
+                  <div style={{borderBottom:"1px solid #111827",marginBottom:4}}/>
+                  <p style={{fontSize:11,color:"#6b7280",margin:0}}>Signature</p>
+                  <p style={{margin:"8px 0 0"}}>{sellerInfo.name || "________________________"}</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"4px 0 0"}}>Printed Name</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"8px 0 0"}}>Date: ________________________</p>
+                  <div style={{marginTop:24,borderBottom:"1px solid #111827",marginBottom:4}}/>
+                  <p style={{fontSize:11,color:"#6b7280",margin:0}}>Co-Seller Signature (if applicable)</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"4px 0 0"}}>Printed Name: ________________________</p>
+                  <p style={{fontSize:11,color:"#6b7280",margin:"4px 0 0"}}>Date: ________________________</p>
+                </div>
+              </div>
+
+              <div style={{display:"grid",gridTemplateColumns:hasBuyerAgent?"1fr 1fr":"1fr",gap:40}}>
+                {hasBuyerAgent && (
+                <div>
+                  <p style={{fontWeight:600,color:"#374151",margin:"0 0 30px",fontSize:11}}>BUYER'S AGENT / BROKER:</p>
+                  <div style={{borderBottom:"1px solid #9ca3af",marginBottom:4}}/>
+                  <p style={{fontSize:10,color:"#6b7280",margin:0}}>Agent Signature</p>
+                  <p style={{fontSize:10,color:"#6b7280",margin:"4px 0 0"}}>Name: {buyerInfo.agent||"________________________"} | License #: {buyerInfo.agentLicense||"____________"}</p>
+                  <p style={{fontSize:10,color:"#6b7280",margin:"2px 0 0"}}>Brokerage: {buyerInfo.brokerage||"________________________"} | Date: ________________________</p>
+                </div>
+                )}
+                <div>
+                  <p style={{fontWeight:600,color:"#374151",margin:"0 0 30px",fontSize:11}}>SELLER'S AGENT / BROKER:</p>
+                  <div style={{borderBottom:"1px solid #9ca3af",marginBottom:4}}/>
+                  <p style={{fontSize:10,color:"#6b7280",margin:0}}>Agent Signature</p>
+                  <p style={{fontSize:10,color:"#6b7280",margin:"4px 0 0"}}>Name: {sellerInfo.agent||"________________________"} | License #: {sellerInfo.agentLicense||"____________"}</p>
+                  <p style={{fontSize:10,color:"#6b7280",margin:"2px 0 0"}}>Brokerage: {sellerInfo.brokerage||"________________________"} | Date: ________________________</p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{textAlign:"center",marginTop:32,paddingTop:16,borderTop:"1px solid #e5e7eb"}}>
+              <p style={{fontSize:10,color:"#9ca3af",margin:0,lineHeight:1.6}}>This Residential Sale and Purchase Contract was generated by PropertyAgent Pro. This document is designed to conform to the standards and structure of the Florida Realtors / Florida Bar Residential Contract. However, it has not been reviewed by the Florida Bar or the Florida Association of Realtors. <strong>BOTH BUYER AND SELLER ARE STRONGLY ADVISED TO CONSULT WITH A LICENSED FLORIDA REAL ESTATE ATTORNEY BEFORE EXECUTING THIS CONTRACT.</strong> This document does not constitute legal advice. This Contract is not binding until signed by all parties and delivered.</p>
+            </div>
+          </div>
+
+          {/* Print button bottom */}
+          <div className="no-print" style={{textAlign:"center",marginTop:24,marginBottom:48}}>
+            <button onClick={handlePrint}
+              style={{background:"linear-gradient(135deg,#2563eb,#1e40af)",color:"#fff",border:"none",borderRadius:10,padding:"14px 48px",fontSize:15,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 12px rgba(37,99,235,0.3)",display:"inline-flex",alignItems:"center",gap:8}}>
+              <PrintIcon/> Print Contract / Save as PDF
+            </button>
+            <p style={{fontSize:12,color:"#6b7280",marginTop:8}}>{hasPaid ? "Tip: Choose \"Save as PDF\" in the print dialog to save a digital copy" : "One-time fee of $"+OFFER_FEE+" required to print"}</p>
+          </div>
+        </div>
+        <PayModal/>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+ReactDOM.render(<App/>, document.getElementById("root"));
+</script>
+</body>
+</html>
