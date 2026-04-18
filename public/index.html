@@ -81,7 +81,8 @@ const LISTINGS = [
     taxAssessed:342000, taxYear:2025, annualTax:5890,
     parcelId:"A-12-29-18-3TK-000001-00001.0", legalDesc:"Lot 5, Block 12, OAKWOOD ESTATES, as recorded in Plat Book 67, Page 42, of the Public Records of Hillsborough County, Florida.",
     description:"Well-maintained 4BR home with updated kitchen, new roof (2023), screened pool, and 2-car garage. Corner lot in established neighborhood.",
-    features:["Pool","Updated Kitchen","New Roof","2-Car Garage","Corner Lot"]
+    features:["Pool","Updated Kitchen","New Roof","2-Car Garage","Corner Lot"],
+    windZone:"HVHZ-Adjacent", windSpeed:150
   },
   {
     id:2, address:"567 Bayshore Blvd #204", city:"Tampa", state:"FL", zip:"33606",
@@ -96,7 +97,8 @@ const LISTINGS = [
     taxAssessed:398000, taxYear:2025, annualTax:6850,
     parcelId:"A-31-29-18-ZZZ-000204-00002.0", legalDesc:"Unit 204, BAYSHORE TOWERS CONDOMINIUM, as recorded in Condominium Book 98, Page 11, of the Public Records of Hillsborough County, Florida.",
     description:"Modern waterfront condo with bay views, granite counters, and resort-style amenities. Walking distance to downtown.",
-    features:["Bay Views","Resort Pool","Gym","Granite Counters","Concierge"]
+    features:["Bay Views","Resort Pool","Gym","Granite Counters","Concierge"],
+    windZone:"HVHZ-Adjacent", windSpeed:150
   },
   {
     id:3, address:"2210 W Platt St", city:"Tampa", state:"FL", zip:"33609",
@@ -112,7 +114,8 @@ const LISTINGS = [
     taxAssessed:289000, taxYear:2025, annualTax:4980,
     parcelId:"A-18-29-18-5PL-000003-00012.0", legalDesc:"Lot 12, Block 3, SUNSET PARK SUBDIVISION, as recorded in Plat Book 45, Page 78, of the Public Records of Hillsborough County, Florida.",
     description:"Charming bungalow in South Tampa. Needs cosmetic updates but solid bones. Large fenced yard. Motivated seller.",
-    features:["Fenced Yard","Wood Floors","Detached Garage","Mature Trees"]
+    features:["Fenced Yard","Wood Floors","Detached Garage","Mature Trees"],
+    windZone:"HVHZ-Adjacent", windSpeed:150
   },
   {
     id:4, address:"8901 N Armenia Ave", city:"Tampa", state:"FL", zip:"33604",
@@ -128,7 +131,8 @@ const LISTINGS = [
     taxAssessed:248000, taxYear:2025, annualTax:4270,
     parcelId:"A-09-29-18-ARM-000089-00001.0", legalDesc:"Lot 1, Block 89, ARMENIA GARDENS, as recorded in Plat Book 22, Page 15, of the Public Records of Hillsborough County, Florida.",
     description:"Bank-owned property. Sold as-is. Multiple open permits. Needs significant renovation. Great investment opportunity.",
-    features:["Large Lot","Carport","Near Transit"]
+    features:["Large Lot","Carport","Near Transit"],
+    windZone:"HVHZ-Adjacent", windSpeed:150
   },
   // --- MIAMI ---
   {
@@ -145,7 +149,8 @@ const LISTINGS = [
     taxAssessed:580000, taxYear:2025, annualTax:9860,
     parcelId:"01-3126-004-3201", legalDesc:"Unit 3201, BRICKELL HEIGHTS CONDOMINIUM, as recorded in Condominium Book 201, Page 55, of the Public Records of Miami-Dade County, Florida.",
     description:"Luxury high-rise condo in the heart of Brickell. Floor-to-ceiling windows, Italian kitchen, resort amenities, and stunning bay views.",
-    features:["Bay Views","Italian Kitchen","Resort Pool","Gym","Concierge","Valet Parking"]
+    features:["Bay Views","Italian Kitchen","Resort Pool","Gym","Concierge","Valet Parking"],
+    windZone:"HVHZ", windSpeed:175
   },
   {
     id:6, address:"3820 SW 87th Ave", city:"Miami", state:"FL", zip:"33155",
@@ -161,7 +166,8 @@ const LISTINGS = [
     taxAssessed:445000, taxYear:2025, annualTax:7650,
     parcelId:"30-4020-012-0140", legalDesc:"Lot 14, Block 12, WESTCHESTER ESTATES SECTION 3, as recorded in Plat Book 88, Page 33, of the Public Records of Miami-Dade County, Florida.",
     description:"Spacious 4BR home in Westchester with impact windows, updated baths, and large backyard. Great school district.",
-    features:["Impact Windows","Updated Bathrooms","Large Backyard","Tile Roof","2-Car Garage"]
+    features:["Impact Windows","Updated Bathrooms","Large Backyard","Tile Roof","2-Car Garage"],
+    windZone:"HVHZ", windSpeed:175
   },
   {
     id:7, address:"750 NE 64th St", city:"Miami", state:"FL", zip:"33138",
@@ -177,7 +183,8 @@ const LISTINGS = [
     taxAssessed:320000, taxYear:2025, annualTax:5500,
     parcelId:"01-3218-028-0050", legalDesc:"Lot 5, Block 28, MORNINGSIDE REVISED, as recorded in Plat Book 12, Page 88, of the Public Records of Miami-Dade County, Florida.",
     description:"Mid-century home in up-and-coming Morningside area. Terrazzo floors, mature landscaping. Needs updates but great bones and location.",
-    features:["Terrazzo Floors","Mature Trees","Near Biscayne Bay","Corner Lot"]
+    features:["Terrazzo Floors","Mature Trees","Near Biscayne Bay","Corner Lot"],
+    windZone:"HVHZ", windSpeed:175
   },
   {
     id:8, address:"9300 SW 152nd St", city:"Miami", state:"FL", zip:"33157",
@@ -193,7 +200,8 @@ const LISTINGS = [
     taxAssessed:275000, taxYear:2025, annualTax:4730,
     parcelId:"30-5090-006-0320", legalDesc:"Lot 32, Block 6, PALMETTO LAKES SECTION 2, as recorded in Plat Book 72, Page 19, of the Public Records of Miami-Dade County, Florida.",
     description:"Well-kept 3BR home in Palmetto Bay area. New water heater, spacious layout, quiet cul-de-sac. Close to shops and parks.",
-    features:["Cul-de-sac","Updated HVAC","Fenced Yard","Near Parks"]
+    features:["Cul-de-sac","Updated HVAC","Fenced Yard","Near Parks"],
+    windZone:"HVHZ", windSpeed:175
   },
   // --- ORLANDO ---
   {
@@ -210,7 +218,8 @@ const LISTINGS = [
     taxAssessed:310000, taxYear:2025, annualTax:5330,
     parcelId:"22-23-29-4521-00-010", legalDesc:"Lot 10, Block A, CONROY CROSSING PHASE 2, as recorded in Plat Book 55, Page 92, of the Public Records of Orange County, Florida.",
     description:"Move-in ready 4BR near attractions corridor. Open floor plan, screened porch, community pool. Close to I-4 and Florida Mall.",
-    features:["Screened Porch","Community Pool","Open Floor Plan","Near I-4"]
+    features:["Screened Porch","Community Pool","Open Floor Plan","Near I-4"],
+    windZone:"Inland", windSpeed:130
   },
   {
     id:10, address:"1287 Lake Nona Blvd", city:"Orlando", state:"FL", zip:"32827",
@@ -225,7 +234,8 @@ const LISTINGS = [
     taxAssessed:480000, taxYear:2025, annualTax:8250,
     parcelId:"25-24-31-1287-00-055", legalDesc:"Lot 55, LAUREATE PARK AT LAKE NONA PHASE 5, as recorded in Plat Book 78, Page 14, of the Public Records of Orange County, Florida.",
     description:"Pristine 4BR in Lake Nona master-planned community. Smart home features, gourmet kitchen, premium lot backing to conservation.",
-    features:["Smart Home","Gourmet Kitchen","Conservation View","Community Pool","Walking Trails"]
+    features:["Smart Home","Gourmet Kitchen","Conservation View","Community Pool","Walking Trails"],
+    windZone:"Inland", windSpeed:130
   },
   {
     id:11, address:"632 E Colonial Dr #108", city:"Orlando", state:"FL", zip:"32803",
@@ -241,7 +251,8 @@ const LISTINGS = [
     taxAssessed:215000, taxYear:2025, annualTax:3700,
     parcelId:"08-22-30-0632-01-080", legalDesc:"Unit 108, COLONIAL TOWN CENTER CONDOMINIUM, as recorded in Condominium Book 42, Page 5, of the Public Records of Orange County, Florida.",
     description:"Downtown Orlando condo near Mills 50 district. Walk to shops and restaurants. Low maintenance living with covered parking.",
-    features:["Covered Parking","Walk to Shops","Downtown Location","Community Pool"]
+    features:["Covered Parking","Walk to Shops","Downtown Location","Community Pool"],
+    windZone:"Inland", windSpeed:130
   },
   {
     id:12, address:"10455 Moss Park Rd", city:"Orlando", state:"FL", zip:"32832",
@@ -257,7 +268,8 @@ const LISTINGS = [
     taxAssessed:268000, taxYear:2025, annualTax:4610,
     parcelId:"27-24-31-0455-00-032", legalDesc:"Lot 32, MOSS PARK VILLAGE PHASE 1, as recorded in Plat Book 39, Page 65, of the Public Records of Orange County, Florida.",
     description:"3BR home near Moss Park preserve. Needs some updating but solid structure. Large screened patio, peaceful neighborhood.",
-    features:["Screened Patio","Near Nature Preserve","Quiet Street","2-Car Garage"]
+    features:["Screened Patio","Near Nature Preserve","Quiet Street","2-Car Garage"],
+    windZone:"Inland", windSpeed:130
   },
   // --- JACKSONVILLE ---
   {
@@ -274,7 +286,8 @@ const LISTINGS = [
     taxAssessed:240000, taxYear:2025, annualTax:4130,
     parcelId:"043952-0100", legalDesc:"Lot 10, Block 1, SAN JUAN TERRACE UNIT 2, as recorded in Plat Book 18, Page 44, of the Public Records of Duval County, Florida.",
     description:"Well-maintained 3BR ranch on quiet street. New HVAC, updated flooring, large fenced backyard. Minutes from NAS Jax.",
-    features:["New HVAC","Updated Flooring","Fenced Yard","Near NAS Jax"]
+    features:["New HVAC","Updated Flooring","Fenced Yard","Near NAS Jax"],
+    windZone:"Coastal", windSpeed:140
   },
   {
     id:14, address:"1120 Riverside Ave #504", city:"Jacksonville", state:"FL", zip:"32204",
@@ -289,7 +302,8 @@ const LISTINGS = [
     taxAssessed:370000, taxYear:2025, annualTax:6360,
     parcelId:"073456-0504", legalDesc:"Unit 504, RIVERSIDE LOFTS CONDOMINIUM, as recorded in Condominium Book 15, Page 72, of the Public Records of Duval County, Florida.",
     description:"Modern riverside condo in Five Points area. Open-concept living, quartz counters, rooftop terrace with river views.",
-    features:["River Views","Rooftop Terrace","Quartz Counters","Walk to Shops","Garage Parking"]
+    features:["River Views","Rooftop Terrace","Quartz Counters","Walk to Shops","Garage Parking"],
+    windZone:"Coastal", windSpeed:140
   },
   {
     id:15, address:"7895 Merrill Rd", city:"Jacksonville", state:"FL", zip:"32277",
@@ -305,7 +319,8 @@ const LISTINGS = [
     taxAssessed:195000, taxYear:2025, annualTax:3350,
     parcelId:"089234-0050", legalDesc:"Lot 5, Block 8, ARLINGTON HILLS UNIT 4, as recorded in Plat Book 25, Page 31, of the Public Records of Duval County, Florida.",
     description:"Bank-owned 3BR in Arlington area. Sold as-is. Needs full renovation. Large lot with potential. Investor opportunity.",
-    features:["Large Lot","Near Shopping","Investor Special"]
+    features:["Large Lot","Near Shopping","Investor Special"],
+    windZone:"Coastal", windSpeed:140
   },
   {
     id:16, address:"2340 Beach Blvd", city:"Jacksonville", state:"FL", zip:"32207",
@@ -321,7 +336,8 @@ const LISTINGS = [
     taxAssessed:310000, taxYear:2025, annualTax:5330,
     parcelId:"065890-0220", legalDesc:"Lot 22, Block 5, LAKEWOOD SECTION 6, as recorded in Plat Book 32, Page 88, of the Public Records of Duval County, Florida.",
     description:"4BR in San Marco area. Resurfaced pool, updated kitchen, two-story with open layout. Walk to shops and restaurants.",
-    features:["Pool","Updated Kitchen","Two-Story","Walk to San Marco","2-Car Garage"]
+    features:["Pool","Updated Kitchen","Two-Story","Walk to San Marco","2-Car Garage"],
+    windZone:"Coastal", windSpeed:140
   }
 ];
 
@@ -398,6 +414,9 @@ function compBased(listing, comps) {
   if(listing.foreclosure){base*=0.90;adj.push({l:"Foreclosure / bank-owned",p:-10});}
   if(listing.lisPendens){base*=0.97;adj.push({l:"Lis pendens filed",p:-3});}
   if(listing.permits.open>0){base*=(1-listing.permits.open*0.015);adj.push({l:listing.permits.open+" open permit(s)",p:-(listing.permits.open*1.5)});}
+  if(listing.windZone==="HVHZ"){base*=0.95;adj.push({l:"HVHZ wind zone (hurricane zone)",p:-5});}
+  else if(listing.windZone==="Coastal"){base*=0.97;adj.push({l:"Coastal wind zone",p:-3});}
+  else if(listing.windZone==="HVHZ-Adjacent"){base*=0.98;adj.push({l:"HVHZ-Adjacent wind zone",p:-2});}
   base*=MARKET.listToSaleRatio;
   adj.push({l:"Market list-to-sale ratio ("+((MARKET.listToSaleRatio*100).toFixed(1))+"%)",p:-((1-MARKET.listToSaleRatio)*100)});
   return {price:Math.round(base),avgPSF:avgPSF.toFixed(2),baseRaw:Math.round(avgPSF*listing.sqft),adj};
@@ -433,6 +452,9 @@ function multiFactor(listing) {
     MARKET.monthlyInventory+" mo inventory, "+(MARKET.priceChangeYoY>0?"+":"")+MARKET.priceChangeYoY+"% YoY");
   add("Listing History",listing.previousListings===0?30:listing.previousListings===1?50:listing.previousListings===2?70:90,7,
     "Listed "+(listing.previousListings+1)+" time(s) total");
+  const wz=listing.windZone||"Inland";
+  add("Wind Zone Risk",wz==="HVHZ"?90:wz==="Coastal"?70:wz==="HVHZ-Adjacent"?55:30,10,
+    wz+" zone — Design wind speed: "+(listing.windSpeed||130)+" mph");
   const cs=ts/tw;
   const dp=Math.max(0,Math.min(18,(cs-20)*0.257));
   return {score:cs.toFixed(1),discPct:dp.toFixed(1),price:Math.round(listing.price*(1-dp/100)),factors:f};
@@ -484,8 +506,10 @@ const DEFAULT_CONTINGENCIES = [
    ═══════════════════════════════════════════════════════════════════════ */
 
 function App() {
-  const [step, setStep] = useState("register"); // register | input | results | analysis | offer
+  const [step, setStep] = useState("register"); // register | input | results | analysis | offer | favorites
   const [sel, setSel] = useState(null);
+  const [favorites, setFavorites] = useState([]);
+  const [showShowingModal, setShowShowingModal] = useState(null);
   const [form, setForm] = useState({
     propertyType:"Single Family", city:"Tampa", state:"FL", zip:"33607",
     minBeds:3, minBaths:2, maxPrice:450000, downPayment:60000,
@@ -923,9 +947,14 @@ function App() {
             <div><h1 style={{fontSize:20,fontWeight:700,margin:0,color:"#111827"}}>PropertyAgent Pro</h1>
             <p style={{fontSize:13,color:"#6b7280",margin:0}}>{form.city}, {form.state} {form.zip} — {filteredListings.length} properties found</p></div>
           </div>
-          <button onClick={()=>setStep("input")} style={{background:"none",border:"none",color:"#2563eb",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
-            <ChevLeft/> New Search
-          </button>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <button onClick={()=>setStep("favorites")} style={{background:"#fff0f0",border:"1px solid #fca5a5",color:"#dc2626",borderRadius:8,padding:"6px 14px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+              {"❤️"} Saved ({favorites.length})
+            </button>
+            <button onClick={()=>setStep("input")} style={{background:"none",border:"none",color:"#2563eb",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+              <ChevLeft/> New Search
+            </button>
+          </div>
         </div>
       </header>
 
@@ -964,7 +993,12 @@ function App() {
         {filteredListings.map(l=>{
           const mf=multiFactor(l);
           return (
-            <div key={l.id} className="card card-hover" style={{padding:20,marginBottom:16}} onClick={()=>{setSel(l);setTaxParcelId("");setLegalDescription("");setStep("analysis");}}>
+            <div key={l.id} className="card card-hover" style={{padding:20,marginBottom:16,position:"relative"}} onClick={()=>{setSel(l);setTaxParcelId("");setLegalDescription("");setStep("analysis");}}>
+              <button onClick={(e)=>{e.stopPropagation();setFavorites(prev=>prev.includes(l.id)?prev.filter(fid=>fid!==l.id):[...prev,l.id]);}}
+                style={{position:"absolute",top:12,right:12,background:"none",border:"none",fontSize:22,cursor:"pointer",zIndex:10,padding:4,lineHeight:1}}
+                title={favorites.includes(l.id)?"Remove from saved":"Save property"}>
+                {favorites.includes(l.id)? <span style={{color:"#dc2626"}}>&#9829;</span> : <span style={{color:"#d1d5db"}}>&#9825;</span>}
+              </button>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                 <div style={{flex:1}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
@@ -998,6 +1032,103 @@ function App() {
         })}
       </div>
     </div>
+    );
+  }
+
+  // ─── SCREEN: FAVORITES ──────────────────────────────────────────────
+  if (step==="favorites") {
+    const favListings = LISTINGS.filter(l => favorites.includes(l.id));
+    return (
+      <div className="gradient-bg min-h-screen">
+        <header style={{background:"#fff",borderBottom:"1px solid #e5e7eb",boxShadow:"0 1px 3px rgba(0,0,0,.06)"}}>
+          <div style={{maxWidth:1000,margin:"0 auto",padding:"16px 24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <div style={{background:"#dc2626",borderRadius:10,padding:8,display:"flex"}}><HomeIcon/></div>
+              <div><h1 style={{fontSize:20,fontWeight:700,margin:0,color:"#111827"}}>My Saved Properties</h1>
+              <p style={{fontSize:13,color:"#6b7280",margin:0}}>{favListings.length} saved propert{favListings.length===1?"y":"ies"}</p></div>
+            </div>
+            <button onClick={()=>setStep("results")} style={{background:"none",border:"none",color:"#2563eb",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+              <ChevLeft/> Back to Results
+            </button>
+          </div>
+        </header>
+        <div style={{maxWidth:1000,margin:"0 auto",padding:"24px"}}>
+          {favListings.length===0 && (
+            <div className="card" style={{padding:48,textAlign:"center"}}>
+              <div style={{fontSize:48,marginBottom:16}}>{"❤️"}</div>
+              <h3 style={{fontSize:18,fontWeight:600,color:"#374151",margin:"0 0 8px"}}>No saved properties yet</h3>
+              <p style={{fontSize:14,color:"#6b7280",margin:"0 0 20px"}}>Click the heart icon on any property to save it for later.</p>
+              <button onClick={()=>setStep("results")} style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"10px 24px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+                Browse Properties
+              </button>
+            </div>
+          )}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+            {favListings.map(l=>{
+              const ppsqft = (l.price/l.sqft).toFixed(0);
+              return (
+                <div key={l.id} className="card" style={{overflow:"hidden"}}>
+                  <div style={{height:120,background:"linear-gradient(135deg,#dbeafe,#eff6ff)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    <HomeIcon s={48} c="#93c5fd"/>
+                  </div>
+                  <div style={{padding:16}}>
+                    <h3 style={{fontSize:15,fontWeight:700,color:"#111827",margin:"0 0 2px"}}>{l.address}</h3>
+                    <p style={{fontSize:12,color:"#6b7280",margin:"0 0 8px"}}>{l.city}, {l.state} {l.zip}</p>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}>
+                      <span style={{fontSize:20,fontWeight:700,color:"#111827"}}>${l.price.toLocaleString()}</span>
+                      <span style={{fontSize:12,color:"#6b7280"}}>${ppsqft}/sqft</span>
+                    </div>
+                    <div style={{display:"flex",gap:12,fontSize:12,color:"#4b5563",marginBottom:10}}>
+                      <span>{l.beds} bed</span><span>{l.baths} bath</span><span>{l.sqft.toLocaleString()} sqft</span>
+                    </div>
+                    {l.features && l.features.length>0 && (
+                      <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:12}}>
+                        {l.features.map((f,i)=>(
+                          <span key={i} className="badge badge-blue" style={{fontSize:10}}>{f}</span>
+                        ))}
+                      </div>
+                    )}
+                    <div style={{display:"flex",gap:8}}>
+                      <button onClick={()=>{setFavorites(prev=>prev.filter(fid=>fid!==l.id));}}
+                        style={{flex:1,background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:8,padding:"8px 12px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                        Remove
+                      </button>
+                      <button onClick={()=>{setSel(l);setTaxParcelId("");setLegalDescription("");setStep("analysis");}}
+                        style={{flex:1,background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 12px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                        View Analysis
+                      </button>
+                      <button onClick={()=>setShowShowingModal(l.id)}
+                        style={{flex:1,background:"#16a34a",color:"#fff",border:"none",borderRadius:8,padding:"8px 12px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                        Request Showing
+                      </button>
+                    </div>
+                  </div>
+                  {showShowingModal===l.id && (
+                    <div className="modal-overlay" onClick={()=>setShowShowingModal(null)}>
+                      <div className="modal-card" onClick={e=>e.stopPropagation()}>
+                        <div style={{textAlign:"center",marginBottom:20}}>
+                          <div style={{fontSize:36,marginBottom:8}}>{"🏠"}</div>
+                          <h2 style={{fontSize:18,fontWeight:700,color:"#111827",margin:"0 0 4px"}}>Showing Request Sent!</h2>
+                          <p style={{fontSize:13,color:"#6b7280",margin:0}}>Your request to view {l.address} has been submitted.</p>
+                        </div>
+                        <div style={{background:"#f9fafb",borderRadius:8,padding:16,marginBottom:16}}>
+                          <p style={{fontSize:13,color:"#374151",margin:"0 0 8px"}}><strong>Property:</strong> {l.address}, {l.city}, {l.state} {l.zip}</p>
+                          <p style={{fontSize:13,color:"#374151",margin:"0 0 8px"}}><strong>List Price:</strong> ${l.price.toLocaleString()}</p>
+                          <p style={{fontSize:13,color:"#374151",margin:0}}><strong>Listing Agent Contact:</strong> Contact listing agent at (813) 555-0{String(l.id).padStart(3,"0")}</p>
+                        </div>
+                        <p style={{fontSize:12,color:"#6b7280",margin:"0 0 16px",textAlign:"center"}}>A representative will contact you within 24 hours to schedule your showing.</p>
+                        <button onClick={()=>setShowShowingModal(null)} className="modal-btn" style={{background:"#2563eb",color:"#fff"}}>
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -1047,7 +1178,7 @@ function App() {
               <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
                 <div>
                   <p style={{fontSize:38,fontWeight:700,margin:0}}>${of.rec.toLocaleString()}</p>
-                  <p style={{fontSize:13,opacity:0.7,margin:"4px 0 0"}}>List: ${l.price.toLocaleString()} — Save ${of.save.toLocaleString()} ({of.savePct}%)</p>
+                  <p style={{fontSize:13,opacity:0.7,margin:"4px 0 0"}}>List: ${l.price.toLocaleString()} — Save ${of.save.toLocaleString()} ({of.savePct}%) — <strong>${(l.price/l.sqft).toFixed(0)}/sqft</strong></p>
                 </div>
                 <div style={{display:"flex",gap:32,textAlign:"right"}}>
                   <div><p style={{fontSize:11,opacity:0.5,margin:0}}>Low Estimate</p><p style={{fontSize:18,fontWeight:600,margin:0}}>${of.lo.toLocaleString()}</p></div>
@@ -1260,6 +1391,197 @@ function App() {
                 {of.conf==="Low"?" Significant divergence — recommend further due diligence.":""}
               </p>
             </div>
+          </div>
+
+          {/* PROPERTY FEATURES */}
+          {l.features && l.features.length > 0 && (
+          <div className="card" style={{padding:24}}>
+            <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>Property Features</h3>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+              {l.features.map((f,i)=>(
+                <span key={i} style={{display:"inline-flex",alignItems:"center",padding:"6px 14px",borderRadius:9999,fontSize:13,fontWeight:500,background:"#dbeafe",color:"#1e40af",border:"1px solid #93c5fd"}}>{f}</span>
+              ))}
+            </div>
+          </div>
+          )}
+
+          {/* WIND & HURRICANE RISK */}
+          {(()=>{
+            const wz = l.windZone || "Inland";
+            const ws = l.windSpeed || 130;
+            const riskLevel = wz==="HVHZ"?"Very High":wz==="Coastal"?"High":wz==="HVHZ-Adjacent"?"Moderate-High":"Moderate";
+            const riskColor = wz==="HVHZ"?"#dc2626":wz==="Coastal"?"#ea580c":wz==="HVHZ-Adjacent"?"#ca8a04":"#16a34a";
+            const insuranceImpact = wz==="HVHZ"?"$3,000-6,000/yr additional":wz==="Coastal"?"$2,000-4,000/yr additional":wz==="HVHZ-Adjacent"?"$1,000-2,500/yr additional":"$500-1,200/yr standard";
+            const needsShutters = wz==="HVHZ"||wz==="Coastal"||wz==="HVHZ-Adjacent";
+            return (
+              <div className="card" style={{padding:24}}>
+                <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>{"🌀"} Wind & Hurricane Risk</h3>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:16}}>
+                  <div style={{textAlign:"center",padding:16,background:"#f9fafb",borderRadius:8}}>
+                    <p style={{fontSize:11,color:"#6b7280",margin:"0 0 4px"}}>Wind Zone</p>
+                    <p style={{fontSize:18,fontWeight:700,color:"#111827",margin:0}}>{wz}</p>
+                  </div>
+                  <div style={{textAlign:"center",padding:16,background:"#f9fafb",borderRadius:8}}>
+                    <p style={{fontSize:11,color:"#6b7280",margin:"0 0 4px"}}>Design Wind Speed</p>
+                    <p style={{fontSize:18,fontWeight:700,color:"#111827",margin:0}}>{ws} mph</p>
+                  </div>
+                  <div style={{textAlign:"center",padding:16,background:"#f9fafb",borderRadius:8}}>
+                    <p style={{fontSize:11,color:"#6b7280",margin:"0 0 4px"}}>Risk Level</p>
+                    <p style={{fontSize:18,fontWeight:700,color:riskColor,margin:0}}>{riskLevel}</p>
+                  </div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                  <div style={{padding:12,background:"#fefce8",borderRadius:8,border:"1px solid #fde68a"}}>
+                    <p style={{fontSize:12,fontWeight:600,color:"#854d0e",margin:"0 0 4px"}}>Insurance Cost Impact</p>
+                    <p style={{fontSize:13,color:"#374151",margin:0}}>{insuranceImpact}</p>
+                  </div>
+                  <div style={{padding:12,background:needsShutters?"#fee2e2":"#dcfce7",borderRadius:8,border:"1px solid "+(needsShutters?"#fca5a5":"#bbf7d0")}}>
+                    <p style={{fontSize:12,fontWeight:600,color:needsShutters?"#991b1b":"#166534",margin:"0 0 4px"}}>Hurricane Shutters / Impact Windows</p>
+                    <p style={{fontSize:13,color:"#374151",margin:0}}>{needsShutters?"Required or strongly recommended":"Recommended but not mandatory"}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* PROS & CONS ANALYSIS */}
+          {(()=>{
+            const pros = [];
+            const cons = [];
+            const asks = [];
+            // Derive pros
+            if(l.features){
+              l.features.forEach(f=>{
+                const fl = f.toLowerCase();
+                if(fl.includes("pool")) pros.push("Pool adds recreation and resale value");
+                if(fl.includes("updated kitchen")||fl.includes("gourmet kitchen")||fl.includes("italian kitchen")) pros.push("Updated/premium kitchen increases home value");
+                if(fl.includes("new roof")) pros.push("New roof reduces near-term maintenance costs");
+                if(fl.includes("impact windows")) pros.push("Impact windows provide hurricane protection and insurance savings");
+                if(fl.includes("smart home")) pros.push("Smart home features add modern appeal");
+                if(fl.includes("garage")) pros.push("Garage adds covered parking and storage");
+                if(fl.includes("fenced yard")) pros.push("Fenced yard provides privacy and pet safety");
+                if(fl.includes("conservation view")||fl.includes("bay views")||fl.includes("river views")) pros.push("Premium views add significant value");
+                if(fl.includes("corner lot")) pros.push("Corner lot offers more space and privacy");
+                if(fl.includes("new hvac")||fl.includes("updated hvac")) pros.push("New/updated HVAC reduces energy costs");
+              });
+            }
+            if(l.crimeScore<35) pros.push("Low crime area (Grade "+l.crimeGrade+") supports property values");
+            if(l.nearestSchoolRating>=7) pros.push("Near well-rated school ("+l.nearestSchoolRating+"/10) — desirable for families");
+            if(l.yearBuilt>=2015) pros.push("Newer construction ("+l.yearBuilt+") means modern building codes and lower maintenance");
+            if(l.floodRisk==="Minimal") pros.push("Minimal flood risk — no flood insurance required");
+            if(!l.foreclosure&&!l.lisPendens) pros.push("Clean title — no foreclosure or legal issues");
+            const cityCompsLocal = getCompsForCity(l.city);
+            const avgPsfLocal = cityCompsLocal.reduce((s,c)=>s+c.pricePerSqft,0)/cityCompsLocal.length;
+            if((l.price/l.sqft)<avgPsfLocal) pros.push("Below-market price per sqft ($"+(l.price/l.sqft).toFixed(0)+" vs avg $"+avgPsfLocal.toFixed(0)+")");
+            if(l.permits.open===0&&l.permits.closed>3) pros.push("All permits closed — renovation history with proper permitting");
+            // Derive cons
+            if(l.crimeScore>=55) cons.push("Elevated crime area (Score "+l.crimeScore+", Grade "+l.crimeGrade+")");
+            if(l.floodRisk==="High"){ cons.push("High flood risk (Zone "+l.floodZone+") — requires flood insurance"); asks.push("Negotiate flood insurance escrow into closing costs"); }
+            if(l.floodRisk==="Moderate"){ cons.push("Moderate flood risk (Zone "+l.floodZone+")"); asks.push("Request elevation certificate"); }
+            const age = 2026 - l.yearBuilt;
+            if(age>40){ cons.push("Older home ("+l.yearBuilt+", "+age+" years) — may need major system updates"); asks.push("Request 4-point inspection (roof, HVAC, electrical, plumbing)"); }
+            else if(age>25) cons.push("Aging home ("+l.yearBuilt+", "+age+" years) — budget for maintenance");
+            if(l.permits.open>0){ cons.push(l.permits.open+" open building permit(s) — incomplete or uninspected work"); asks.push("Request seller close all open permits before closing"); }
+            if(l.lisPendens){ cons.push("Lis pendens filed — pending litigation creates title risk"); asks.push("Consult real estate attorney regarding title and pending litigation"); }
+            if(l.foreclosure){ cons.push("Foreclosure / bank-owned — likely sold as-is condition"); asks.push("Budget for renovation costs and obtain property condition report"); }
+            if(l.daysOnMarket>90) cons.push("On market "+l.daysOnMarket+" days — stale listing may indicate hidden issues");
+            if(l.priceReductions.length>=3) cons.push(l.priceReductions.length+" price reductions — repeated failure to sell at listed prices");
+            if(l.hoa>=400) cons.push("High HOA fees ($"+l.hoa+"/mo) add to monthly costs");
+            const wz = l.windZone||"Inland";
+            if(wz==="HVHZ"||wz==="Coastal"){ cons.push("High wind risk zone ("+wz+") increases insurance costs"); asks.push("Request hurricane shutter/impact window credit if not already installed"); }
+            // Negotiation asks
+            if(l.daysOnMarket>60) asks.push("Use extended market time as leverage for price reduction");
+            if(l.priceReductions.length>=2) asks.push("Reference multiple price cuts to justify below-list offer");
+            if(age>30&&!l.features.some(f=>f.toLowerCase().includes("new roof"))) asks.push("Request roof inspection credit");
+            return (
+              <div className="card" style={{padding:24}}>
+                <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>{"📋"} Pros & Cons Analysis</h3>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24,marginBottom:20}}>
+                  <div>
+                    <h4 style={{fontSize:12,fontWeight:600,color:"#16a34a",textTransform:"uppercase",marginBottom:8}}>{"✅"} Pros</h4>
+                    {pros.length===0 && <p style={{fontSize:13,color:"#9ca3af",fontStyle:"italic"}}>No significant pros identified</p>}
+                    {pros.map((p,i)=>(
+                      <div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,marginBottom:6}}>
+                        <span style={{color:"#16a34a",fontWeight:700,flexShrink:0}}>+</span>
+                        <span style={{fontSize:13,color:"#374151"}}>{p}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    <h4 style={{fontSize:12,fontWeight:600,color:"#dc2626",textTransform:"uppercase",marginBottom:8}}>{"⚠️"} Cons</h4>
+                    {cons.length===0 && <p style={{fontSize:13,color:"#9ca3af",fontStyle:"italic"}}>No significant cons identified</p>}
+                    {cons.map((c,i)=>(
+                      <div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,marginBottom:6}}>
+                        <span style={{color:"#dc2626",fontWeight:700,flexShrink:0}}>-</span>
+                        <span style={{fontSize:13,color:"#374151"}}>{c}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {asks.length>0 && (
+                  <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:16}}>
+                    <h4 style={{fontSize:12,fontWeight:600,color:"#1e40af",textTransform:"uppercase",marginTop:0,marginBottom:8}}>{"💡"} What to Ask For (Negotiation Suggestions)</h4>
+                    {asks.map((a,i)=>(
+                      <div key={i} style={{display:"flex",alignItems:"flex-start",gap:6,marginBottom:6}}>
+                        <span style={{color:"#2563eb",fontWeight:700,flexShrink:0}}>{"→"}</span>
+                        <span style={{fontSize:13,color:"#374151"}}>{a}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* PRE-PURCHASE RECOMMENDATIONS */}
+          {(()=>{
+            const recs = [];
+            recs.push("Obtain independent home inspection from a licensed Florida inspector");
+            recs.push("Verify all property data with "+getCountyForCity(l.city)+" County records");
+            if(l.floodRisk!=="Minimal"){
+              recs.push("Obtain flood insurance quotes before closing");
+              recs.push("Request elevation certificate from seller or surveyor");
+            }
+            const wz = l.windZone||"Inland";
+            if(wz!=="Inland"){
+              recs.push("Inspect roof tie-downs and hurricane straps");
+              recs.push("Verify impact-rated windows/shutters or budget for installation");
+            }
+            if(l.permits.open>0) recs.push("Require seller to close all "+l.permits.open+" open permit(s) before closing");
+            if(l.foreclosure){
+              recs.push("Budget for renovation costs — foreclosures are typically sold as-is");
+              recs.push("Obtain property condition report from licensed inspector");
+            }
+            if(l.lisPendens) recs.push("Consult real estate attorney regarding pending litigation (lis pendens)");
+            const age = 2026 - l.yearBuilt;
+            if(age>30) recs.push("Request 4-point inspection (roof, HVAC, electrical, plumbing) — home is "+age+" years old");
+            if(l.crimeScore>=55){
+              recs.push("Research neighborhood crime trends and recent incidents");
+              recs.push("Consider security system installation costs");
+            }
+            if(l.hoa>0) recs.push("Review HOA/condo association financial statements and reserve fund");
+            if(l.yearBuilt<1978) recs.push("Request lead-based paint inspection — home built before 1978");
+            return (
+              <div className="card" style={{padding:24}}>
+                <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>{"📝"} Recommendations Before Purchasing</h3>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                  {recs.map((r,i)=>(
+                    <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,padding:8,background:i%2===0?"#f9fafb":"#fff",borderRadius:6}}>
+                      <span style={{color:"#2563eb",fontWeight:700,flexShrink:0,marginTop:1}}>{"•"}</span>
+                      <span style={{fontSize:13,color:"#374151"}}>{r}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* LEGAL DISCLAIMER */}
+          <div className="card" style={{padding:24,border:"2px solid #fbbf24",background:"#fffbeb"}}>
+            <h3 style={{fontSize:14,fontWeight:700,color:"#92400e",marginTop:0,marginBottom:12}}>{"⚠️"} IMPORTANT LEGAL DISCLAIMER</h3>
+            <p style={{fontSize:12,color:"#78350f",lineHeight:1.7,margin:0}}>
+              All property information, market data, pricing analysis, and offer recommendations provided by PropertyAgent Pro are for informational purposes only and must be independently verified by the user. PropertyAgent Pro does not guarantee the accuracy, completeness, or reliability of any data presented. The buyer assumes all responsibility for verifying property records, title status, flood zones, wind zones, permits, tax assessments, and all other information contained in any generated offer or analysis. This tool does not constitute legal, financial, or real estate advice. Users are strongly encouraged to consult with licensed real estate professionals, attorneys, and inspectors before making any purchase decisions or submitting offers. By using this service, you acknowledge and agree that PropertyAgent Pro, its developers, and affiliates bear no liability for any decisions made based on information provided herein.
+            </p>
           </div>
 
           {/* GENERATE OFFER BUTTON */}
@@ -1546,6 +1868,13 @@ function App() {
                 </div>
                 )}
               </div>
+            </div>
+
+            <div style={{marginTop:24,padding:16,border:"2px solid #fbbf24",background:"#fffbeb",borderRadius:8}}>
+              <p style={{fontSize:10,fontWeight:700,color:"#92400e",margin:"0 0 6px"}}>IMPORTANT LEGAL DISCLAIMER</p>
+              <p style={{fontSize:9,color:"#78350f",margin:0,lineHeight:1.6}}>
+                All property information, market data, pricing analysis, and offer recommendations provided by PropertyAgent Pro are for informational purposes only and must be independently verified by the user. PropertyAgent Pro does not guarantee the accuracy, completeness, or reliability of any data presented. The buyer assumes all responsibility for verifying property records, title status, flood zones, wind zones, permits, tax assessments, and all other information contained in any generated offer or analysis. This tool does not constitute legal, financial, or real estate advice. Users are strongly encouraged to consult with licensed real estate professionals, attorneys, and inspectors before making any purchase decisions or submitting offers. By using this service, you acknowledge and agree that PropertyAgent Pro, its developers, and affiliates bear no liability for any decisions made based on information provided herein.
+              </p>
             </div>
 
             <div style={{textAlign:"center",marginTop:32,paddingTop:16,borderTop:"1px solid #e5e7eb"}}>
