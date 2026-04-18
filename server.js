@@ -546,17 +546,17 @@ setInterval(loadStats, 30000); // refresh stats every 30s
 
 
 // ══════════════════════════════════════════════════════════════════════
-// START SERVER
+// START SERVER (async to wait for database init)
 // ══════════════════════════════════════════════════════════════════════
-app.listen(PORT, () => {
-  console.log('');
-  console.log('  ╔════════════════════════════════════════════════╗');
-  console.log('  ║   PropertyAgent Pro — Server Running           ║');
-  console.log('  ╠════════════════════════════════════════════════╣');
-  console.log('  ║                                                ║');
-  console.log('  ║   App:    http://localhost:' + PORT + '                ║');
-  console.log('  ║   Admin:  http://localhost:' + PORT + '/admin          ║');
-  console.log('  ║                                                ║');
-  console.log('  ╚════════════════════════════════════════════════╝');
-  console.log('');
+db.init().then(() => {
+  app.listen(PORT, () => {
+    console.log('');
+    console.log('  PropertyAgent Pro — Server Running');
+    console.log('  App:    http://localhost:' + PORT);
+    console.log('  Admin:  http://localhost:' + PORT + '/admin');
+    console.log('');
+  });
+}).catch(err => {
+  console.error('Failed to start:', err);
+  process.exit(1);
 });
