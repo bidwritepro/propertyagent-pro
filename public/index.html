@@ -48,6 +48,12 @@
   .modal-input { width:100%; border:1px solid #d1d5db; border-radius:8px; padding:10px 14px; font-size:14px; box-sizing:border-box; margin-bottom:12px; }
   .modal-input:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.2); outline:none; }
   .modal-btn { width:100%; padding:12px; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; }
+  /* Toast notification */
+  .toast-notification { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:12px 24px; border-radius:8px; font-size:14px; font-weight:500; z-index:10000; box-shadow:0 8px 24px rgba(0,0,0,0.3); animation:toastIn 0.3s ease; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+  /* Lookup animation */
+  @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+  .lookup-spinner { display:inline-block; width:14px; height:14px; border:2px solid #d1d5db; border-top-color:#2563eb; border-radius:50%; animation:spin 0.6s linear infinite; }
 </style>
 </head>
 <body>
@@ -60,6 +66,7 @@ const { useState } = React;
    ═══════════════════════════════════════════════════════════════════════ */
 
 const LISTINGS = [
+  // --- TAMPA ---
   {
     id:1, address:"1842 Oakwood Dr", city:"Tampa", state:"FL", zip:"33607",
     price:389000, beds:4, baths:2.5, sqft:2180, yearBuilt:2005, lotSize:0.28,
@@ -72,6 +79,7 @@ const LISTINGS = [
     permits:{open:0,closed:8,lastPermit:{type:"Roof Replacement",date:"2023-04-10",status:"Closed"}},
     foreclosure:false, lisPendens:false, hoa:150,
     taxAssessed:342000, taxYear:2025, annualTax:5890,
+    parcelId:"A-12-29-18-3TK-000001-00001.0", legalDesc:"Lot 5, Block 12, OAKWOOD ESTATES, as recorded in Plat Book 67, Page 42, of the Public Records of Hillsborough County, Florida.",
     description:"Well-maintained 4BR home with updated kitchen, new roof (2023), screened pool, and 2-car garage. Corner lot in established neighborhood.",
     features:["Pool","Updated Kitchen","New Roof","2-Car Garage","Corner Lot"]
   },
@@ -86,6 +94,7 @@ const LISTINGS = [
     permits:{open:1,closed:3,lastPermit:{type:"HVAC Repair",date:"2026-01-20",status:"Open"}},
     foreclosure:false, lisPendens:false, hoa:485,
     taxAssessed:398000, taxYear:2025, annualTax:6850,
+    parcelId:"A-31-29-18-ZZZ-000204-00002.0", legalDesc:"Unit 204, BAYSHORE TOWERS CONDOMINIUM, as recorded in Condominium Book 98, Page 11, of the Public Records of Hillsborough County, Florida.",
     description:"Modern waterfront condo with bay views, granite counters, and resort-style amenities. Walking distance to downtown.",
     features:["Bay Views","Resort Pool","Gym","Granite Counters","Concierge"]
   },
@@ -101,6 +110,7 @@ const LISTINGS = [
     permits:{open:2,closed:12,lastPermit:{type:"Electrical",date:"2025-11-15",status:"Open"}},
     foreclosure:false, lisPendens:true, hoa:0,
     taxAssessed:289000, taxYear:2025, annualTax:4980,
+    parcelId:"A-18-29-18-5PL-000003-00012.0", legalDesc:"Lot 12, Block 3, SUNSET PARK SUBDIVISION, as recorded in Plat Book 45, Page 78, of the Public Records of Hillsborough County, Florida.",
     description:"Charming bungalow in South Tampa. Needs cosmetic updates but solid bones. Large fenced yard. Motivated seller.",
     features:["Fenced Yard","Wood Floors","Detached Garage","Mature Trees"]
   },
@@ -116,18 +126,251 @@ const LISTINGS = [
     permits:{open:3,closed:5,lastPermit:{type:"Plumbing",date:"2026-02-01",status:"Open"}},
     foreclosure:true, lisPendens:true, hoa:0,
     taxAssessed:248000, taxYear:2025, annualTax:4270,
+    parcelId:"A-09-29-18-ARM-000089-00001.0", legalDesc:"Lot 1, Block 89, ARMENIA GARDENS, as recorded in Plat Book 22, Page 15, of the Public Records of Hillsborough County, Florida.",
     description:"Bank-owned property. Sold as-is. Multiple open permits. Needs significant renovation. Great investment opportunity.",
     features:["Large Lot","Carport","Near Transit"]
+  },
+  // --- MIAMI ---
+  {
+    id:5, address:"1455 Brickell Ave #3201", city:"Miami", state:"FL", zip:"33131",
+    price:625000, beds:2, baths:2, sqft:1350, yearBuilt:2019, lotSize:0,
+    type:"Condo", daysOnMarket:28, listDate:"2026-03-20", previousListings:0,
+    originalPrice:649000,
+    priceReductions:[{date:"2026-04-10",from:649000,to:625000}],
+    floodZone:"AE", floodRisk:"High", femaPanel:"12086C0360H",
+    crimeScore:35, crimeGrade:"B+", nearestSchoolRating:7, nearestHighway:0.4,
+    previousSales:[{date:"2021-05-10",price:520000}],
+    permits:{open:0,closed:2,lastPermit:{type:"Balcony Railing",date:"2024-08-14",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:780,
+    taxAssessed:580000, taxYear:2025, annualTax:9860,
+    parcelId:"01-3126-004-3201", legalDesc:"Unit 3201, BRICKELL HEIGHTS CONDOMINIUM, as recorded in Condominium Book 201, Page 55, of the Public Records of Miami-Dade County, Florida.",
+    description:"Luxury high-rise condo in the heart of Brickell. Floor-to-ceiling windows, Italian kitchen, resort amenities, and stunning bay views.",
+    features:["Bay Views","Italian Kitchen","Resort Pool","Gym","Concierge","Valet Parking"]
+  },
+  {
+    id:6, address:"3820 SW 87th Ave", city:"Miami", state:"FL", zip:"33155",
+    price:485000, beds:4, baths:3, sqft:2250, yearBuilt:1998, lotSize:0.22,
+    type:"Single Family", daysOnMarket:62, listDate:"2026-02-14", previousListings:1,
+    originalPrice:515000,
+    priceReductions:[{date:"2026-03-20",from:515000,to:499000},{date:"2026-04-08",from:499000,to:485000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12086C0580H",
+    crimeScore:42, crimeGrade:"B-", nearestSchoolRating:8, nearestHighway:0.9,
+    previousSales:[{date:"2017-11-05",price:340000},{date:"2005-09-12",price:265000}],
+    permits:{open:0,closed:6,lastPermit:{type:"Impact Windows",date:"2023-06-20",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:0,
+    taxAssessed:445000, taxYear:2025, annualTax:7650,
+    parcelId:"30-4020-012-0140", legalDesc:"Lot 14, Block 12, WESTCHESTER ESTATES SECTION 3, as recorded in Plat Book 88, Page 33, of the Public Records of Miami-Dade County, Florida.",
+    description:"Spacious 4BR home in Westchester with impact windows, updated baths, and large backyard. Great school district.",
+    features:["Impact Windows","Updated Bathrooms","Large Backyard","Tile Roof","2-Car Garage"]
+  },
+  {
+    id:7, address:"750 NE 64th St", city:"Miami", state:"FL", zip:"33138",
+    price:379000, beds:3, baths:2, sqft:1580, yearBuilt:1955, lotSize:0.14,
+    type:"Single Family", daysOnMarket:110, listDate:"2025-12-28", previousListings:3,
+    originalPrice:429000,
+    priceReductions:[{date:"2026-01-28",from:429000,to:409000},{date:"2026-02-25",from:409000,to:395000},{date:"2026-03-25",from:395000,to:379000}],
+    floodZone:"AE", floodRisk:"High", femaPanel:"12086C0320H",
+    crimeScore:58, crimeGrade:"C", nearestSchoolRating:5, nearestHighway:0.6,
+    previousSales:[{date:"2020-03-01",price:310000},{date:"2014-07-22",price:185000}],
+    permits:{open:1,closed:9,lastPermit:{type:"Electrical Panel",date:"2025-09-10",status:"Open"}},
+    foreclosure:false, lisPendens:true, hoa:0,
+    taxAssessed:320000, taxYear:2025, annualTax:5500,
+    parcelId:"01-3218-028-0050", legalDesc:"Lot 5, Block 28, MORNINGSIDE REVISED, as recorded in Plat Book 12, Page 88, of the Public Records of Miami-Dade County, Florida.",
+    description:"Mid-century home in up-and-coming Morningside area. Terrazzo floors, mature landscaping. Needs updates but great bones and location.",
+    features:["Terrazzo Floors","Mature Trees","Near Biscayne Bay","Corner Lot"]
+  },
+  {
+    id:8, address:"9300 SW 152nd St", city:"Miami", state:"FL", zip:"33157",
+    price:310000, beds:3, baths:2, sqft:1400, yearBuilt:1982, lotSize:0.16,
+    type:"Single Family", daysOnMarket:45, listDate:"2026-03-03", previousListings:1,
+    originalPrice:329000,
+    priceReductions:[{date:"2026-04-01",from:329000,to:310000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12086C0720H",
+    crimeScore:48, crimeGrade:"C+", nearestSchoolRating:6, nearestHighway:1.0,
+    previousSales:[{date:"2018-09-18",price:240000}],
+    permits:{open:0,closed:4,lastPermit:{type:"Water Heater",date:"2024-03-05",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:95,
+    taxAssessed:275000, taxYear:2025, annualTax:4730,
+    parcelId:"30-5090-006-0320", legalDesc:"Lot 32, Block 6, PALMETTO LAKES SECTION 2, as recorded in Plat Book 72, Page 19, of the Public Records of Miami-Dade County, Florida.",
+    description:"Well-kept 3BR home in Palmetto Bay area. New water heater, spacious layout, quiet cul-de-sac. Close to shops and parks.",
+    features:["Cul-de-sac","Updated HVAC","Fenced Yard","Near Parks"]
+  },
+  // --- ORLANDO ---
+  {
+    id:9, address:"4521 Conroy Rd", city:"Orlando", state:"FL", zip:"32811",
+    price:345000, beds:4, baths:2, sqft:1900, yearBuilt:2001, lotSize:0.20,
+    type:"Single Family", daysOnMarket:35, listDate:"2026-03-12", previousListings:0,
+    originalPrice:359000,
+    priceReductions:[{date:"2026-04-05",from:359000,to:345000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12095C0285H",
+    crimeScore:44, crimeGrade:"B-", nearestSchoolRating:6, nearestHighway:0.7,
+    previousSales:[{date:"2016-04-20",price:235000}],
+    permits:{open:0,closed:5,lastPermit:{type:"Fence",date:"2024-07-01",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:120,
+    taxAssessed:310000, taxYear:2025, annualTax:5330,
+    parcelId:"22-23-29-4521-00-010", legalDesc:"Lot 10, Block A, CONROY CROSSING PHASE 2, as recorded in Plat Book 55, Page 92, of the Public Records of Orange County, Florida.",
+    description:"Move-in ready 4BR near attractions corridor. Open floor plan, screened porch, community pool. Close to I-4 and Florida Mall.",
+    features:["Screened Porch","Community Pool","Open Floor Plan","Near I-4"]
+  },
+  {
+    id:10, address:"1287 Lake Nona Blvd", city:"Orlando", state:"FL", zip:"32827",
+    price:520000, beds:4, baths:3, sqft:2600, yearBuilt:2015, lotSize:0.25,
+    type:"Single Family", daysOnMarket:18, listDate:"2026-03-30", previousListings:0,
+    originalPrice:520000, priceReductions:[],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12095C0530H",
+    crimeScore:18, crimeGrade:"A", nearestSchoolRating:9, nearestHighway:1.5,
+    previousSales:[{date:"2015-08-15",price:395000}],
+    permits:{open:0,closed:3,lastPermit:{type:"Patio Cover",date:"2024-02-10",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:200,
+    taxAssessed:480000, taxYear:2025, annualTax:8250,
+    parcelId:"25-24-31-1287-00-055", legalDesc:"Lot 55, LAUREATE PARK AT LAKE NONA PHASE 5, as recorded in Plat Book 78, Page 14, of the Public Records of Orange County, Florida.",
+    description:"Pristine 4BR in Lake Nona master-planned community. Smart home features, gourmet kitchen, premium lot backing to conservation.",
+    features:["Smart Home","Gourmet Kitchen","Conservation View","Community Pool","Walking Trails"]
+  },
+  {
+    id:11, address:"632 E Colonial Dr #108", city:"Orlando", state:"FL", zip:"32803",
+    price:235000, beds:2, baths:2, sqft:1100, yearBuilt:2008, lotSize:0,
+    type:"Condo", daysOnMarket:72, listDate:"2026-02-04", previousListings:2,
+    originalPrice:265000,
+    priceReductions:[{date:"2026-03-01",from:265000,to:249000},{date:"2026-03-28",from:249000,to:235000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12095C0295H",
+    crimeScore:55, crimeGrade:"C", nearestSchoolRating:5, nearestHighway:0.3,
+    previousSales:[{date:"2019-02-28",price:195000}],
+    permits:{open:0,closed:1,lastPermit:{type:"Water Heater",date:"2023-12-01",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:350,
+    taxAssessed:215000, taxYear:2025, annualTax:3700,
+    parcelId:"08-22-30-0632-01-080", legalDesc:"Unit 108, COLONIAL TOWN CENTER CONDOMINIUM, as recorded in Condominium Book 42, Page 5, of the Public Records of Orange County, Florida.",
+    description:"Downtown Orlando condo near Mills 50 district. Walk to shops and restaurants. Low maintenance living with covered parking.",
+    features:["Covered Parking","Walk to Shops","Downtown Location","Community Pool"]
+  },
+  {
+    id:12, address:"10455 Moss Park Rd", city:"Orlando", state:"FL", zip:"32832",
+    price:295000, beds:3, baths:2, sqft:1550, yearBuilt:1995, lotSize:0.18,
+    type:"Single Family", daysOnMarket:88, listDate:"2026-01-19", previousListings:2,
+    originalPrice:335000,
+    priceReductions:[{date:"2026-02-20",from:335000,to:315000},{date:"2026-03-18",from:315000,to:295000}],
+    floodZone:"X500", floodRisk:"Moderate", femaPanel:"12095C0520H",
+    crimeScore:30, crimeGrade:"B+", nearestSchoolRating:7, nearestHighway:1.8,
+    previousSales:[{date:"2015-06-10",price:195000},{date:"2003-09-22",price:135000}],
+    permits:{open:1,closed:7,lastPermit:{type:"Roof Repair",date:"2025-10-05",status:"Open"}},
+    foreclosure:false, lisPendens:false, hoa:75,
+    taxAssessed:268000, taxYear:2025, annualTax:4610,
+    parcelId:"27-24-31-0455-00-032", legalDesc:"Lot 32, MOSS PARK VILLAGE PHASE 1, as recorded in Plat Book 39, Page 65, of the Public Records of Orange County, Florida.",
+    description:"3BR home near Moss Park preserve. Needs some updating but solid structure. Large screened patio, peaceful neighborhood.",
+    features:["Screened Patio","Near Nature Preserve","Quiet Street","2-Car Garage"]
+  },
+  // --- JACKSONVILLE ---
+  {
+    id:13, address:"4782 San Juan Ave", city:"Jacksonville", state:"FL", zip:"32210",
+    price:265000, beds:3, baths:2, sqft:1600, yearBuilt:1990, lotSize:0.22,
+    type:"Single Family", daysOnMarket:40, listDate:"2026-03-08", previousListings:1,
+    originalPrice:279000,
+    priceReductions:[{date:"2026-04-02",from:279000,to:265000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12031C0235H",
+    crimeScore:46, crimeGrade:"B-", nearestSchoolRating:6, nearestHighway:0.8,
+    previousSales:[{date:"2018-03-12",price:195000}],
+    permits:{open:0,closed:4,lastPermit:{type:"HVAC Replacement",date:"2024-01-15",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:0,
+    taxAssessed:240000, taxYear:2025, annualTax:4130,
+    parcelId:"043952-0100", legalDesc:"Lot 10, Block 1, SAN JUAN TERRACE UNIT 2, as recorded in Plat Book 18, Page 44, of the Public Records of Duval County, Florida.",
+    description:"Well-maintained 3BR ranch on quiet street. New HVAC, updated flooring, large fenced backyard. Minutes from NAS Jax.",
+    features:["New HVAC","Updated Flooring","Fenced Yard","Near NAS Jax"]
+  },
+  {
+    id:14, address:"1120 Riverside Ave #504", city:"Jacksonville", state:"FL", zip:"32204",
+    price:395000, beds:2, baths:2, sqft:1450, yearBuilt:2020, lotSize:0,
+    type:"Condo", daysOnMarket:22, listDate:"2026-03-26", previousListings:0,
+    originalPrice:395000, priceReductions:[],
+    floodZone:"AE", floodRisk:"High", femaPanel:"12031C0175H",
+    crimeScore:28, crimeGrade:"A-", nearestSchoolRating:7, nearestHighway:0.5,
+    previousSales:[{date:"2020-11-01",price:365000}],
+    permits:{open:0,closed:1,lastPermit:{type:"Interior Buildout",date:"2020-10-15",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:450,
+    taxAssessed:370000, taxYear:2025, annualTax:6360,
+    parcelId:"073456-0504", legalDesc:"Unit 504, RIVERSIDE LOFTS CONDOMINIUM, as recorded in Condominium Book 15, Page 72, of the Public Records of Duval County, Florida.",
+    description:"Modern riverside condo in Five Points area. Open-concept living, quartz counters, rooftop terrace with river views.",
+    features:["River Views","Rooftop Terrace","Quartz Counters","Walk to Shops","Garage Parking"]
+  },
+  {
+    id:15, address:"7895 Merrill Rd", city:"Jacksonville", state:"FL", zip:"32277",
+    price:215000, beds:3, baths:1.5, sqft:1200, yearBuilt:1975, lotSize:0.18,
+    type:"Single Family", daysOnMarket:130, listDate:"2025-12-08", previousListings:3,
+    originalPrice:269000,
+    priceReductions:[{date:"2026-01-10",from:269000,to:249000},{date:"2026-02-15",from:249000,to:235000},{date:"2026-03-20",from:235000,to:215000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12031C0310H",
+    crimeScore:62, crimeGrade:"C-", nearestSchoolRating:4, nearestHighway:0.4,
+    previousSales:[{date:"2022-08-05",price:245000},{date:"2017-01-20",price:132000}],
+    permits:{open:2,closed:6,lastPermit:{type:"Plumbing",date:"2025-11-01",status:"Open"}},
+    foreclosure:true, lisPendens:true, hoa:0,
+    taxAssessed:195000, taxYear:2025, annualTax:3350,
+    parcelId:"089234-0050", legalDesc:"Lot 5, Block 8, ARLINGTON HILLS UNIT 4, as recorded in Plat Book 25, Page 31, of the Public Records of Duval County, Florida.",
+    description:"Bank-owned 3BR in Arlington area. Sold as-is. Needs full renovation. Large lot with potential. Investor opportunity.",
+    features:["Large Lot","Near Shopping","Investor Special"]
+  },
+  {
+    id:16, address:"2340 Beach Blvd", city:"Jacksonville", state:"FL", zip:"32207",
+    price:340000, beds:4, baths:2.5, sqft:2000, yearBuilt:2003, lotSize:0.20,
+    type:"Single Family", daysOnMarket:55, listDate:"2026-02-21", previousListings:1,
+    originalPrice:365000,
+    priceReductions:[{date:"2026-03-25",from:365000,to:340000}],
+    floodZone:"X", floodRisk:"Minimal", femaPanel:"12031C0260H",
+    crimeScore:38, crimeGrade:"B", nearestSchoolRating:7, nearestHighway:0.6,
+    previousSales:[{date:"2016-10-15",price:248000}],
+    permits:{open:0,closed:5,lastPermit:{type:"Pool Resurfacing",date:"2024-05-20",status:"Closed"}},
+    foreclosure:false, lisPendens:false, hoa:135,
+    taxAssessed:310000, taxYear:2025, annualTax:5330,
+    parcelId:"065890-0220", legalDesc:"Lot 22, Block 5, LAKEWOOD SECTION 6, as recorded in Plat Book 32, Page 88, of the Public Records of Duval County, Florida.",
+    description:"4BR in San Marco area. Resurfaced pool, updated kitchen, two-story with open layout. Walk to shops and restaurants.",
+    features:["Pool","Updated Kitchen","Two-Story","Walk to San Marco","2-Car Garage"]
   }
 ];
 
-const COMPARABLES = [
-  {address:"1900 W Cleveland St",price:375000,sqft:2050,beds:4,baths:2,soldDate:"2026-03-10",daysOnMarket:34,pricePerSqft:182.93},
-  {address:"2105 W Jetton Ave",price:412000,sqft:2300,beds:4,baths:2.5,soldDate:"2026-02-22",daysOnMarket:28,pricePerSqft:179.13},
-  {address:"1755 S Lois Ave",price:358000,sqft:1980,beds:3,baths:2,soldDate:"2026-03-28",daysOnMarket:52,pricePerSqft:180.81},
-  {address:"3012 W Bay to Bay Blvd",price:395000,sqft:2150,beds:4,baths:2,soldDate:"2026-01-15",daysOnMarket:41,pricePerSqft:183.72},
-  {address:"1622 S Howard Ave",price:382000,sqft:2100,beds:3,baths:2.5,soldDate:"2026-04-02",daysOnMarket:19,pricePerSqft:181.90},
-];
+const COMPARABLES_BY_CITY = {
+  Tampa: [
+    {address:"1900 W Cleveland St",price:375000,sqft:2050,beds:4,baths:2,soldDate:"2026-03-10",daysOnMarket:34,pricePerSqft:182.93},
+    {address:"2105 W Jetton Ave",price:412000,sqft:2300,beds:4,baths:2.5,soldDate:"2026-02-22",daysOnMarket:28,pricePerSqft:179.13},
+    {address:"1755 S Lois Ave",price:358000,sqft:1980,beds:3,baths:2,soldDate:"2026-03-28",daysOnMarket:52,pricePerSqft:180.81},
+    {address:"3012 W Bay to Bay Blvd",price:395000,sqft:2150,beds:4,baths:2,soldDate:"2026-01-15",daysOnMarket:41,pricePerSqft:183.72},
+    {address:"1622 S Howard Ave",price:382000,sqft:2100,beds:3,baths:2.5,soldDate:"2026-04-02",daysOnMarket:19,pricePerSqft:181.90},
+  ],
+  Miami: [
+    {address:"3045 SW 92nd Ave",price:470000,sqft:2100,beds:4,baths:3,soldDate:"2026-03-15",daysOnMarket:38,pricePerSqft:223.81},
+    {address:"1580 Brickell Ave #2803",price:595000,sqft:1320,beds:2,baths:2,soldDate:"2026-02-28",daysOnMarket:25,pricePerSqft:450.76},
+    {address:"8720 SW 148th St",price:325000,sqft:1450,beds:3,baths:2,soldDate:"2026-03-22",daysOnMarket:44,pricePerSqft:224.14},
+    {address:"920 NE 62nd St",price:395000,sqft:1620,beds:3,baths:2,soldDate:"2026-04-01",daysOnMarket:32,pricePerSqft:243.83},
+    {address:"4100 SW 79th Ave",price:440000,sqft:1950,beds:4,baths:2.5,soldDate:"2026-03-08",daysOnMarket:50,pricePerSqft:225.64},
+  ],
+  Orlando: [
+    {address:"4810 S Kirkman Rd",price:330000,sqft:1800,beds:4,baths:2,soldDate:"2026-03-18",daysOnMarket:30,pricePerSqft:183.33},
+    {address:"1550 Lake Nona Blvd",price:505000,sqft:2500,beds:4,baths:3,soldDate:"2026-02-25",daysOnMarket:22,pricePerSqft:202.00},
+    {address:"820 E Colonial Dr #205",price:225000,sqft:1050,beds:2,baths:2,soldDate:"2026-03-30",daysOnMarket:48,pricePerSqft:214.29},
+    {address:"9200 Moss Park Rd",price:285000,sqft:1500,beds:3,baths:2,soldDate:"2026-01-20",daysOnMarket:55,pricePerSqft:190.00},
+    {address:"3380 Conroy Rd",price:340000,sqft:1850,beds:3,baths:2.5,soldDate:"2026-04-05",daysOnMarket:18,pricePerSqft:183.78},
+  ],
+  Jacksonville: [
+    {address:"4500 San Juan Ave",price:255000,sqft:1550,beds:3,baths:2,soldDate:"2026-03-12",daysOnMarket:35,pricePerSqft:164.52},
+    {address:"1050 Riverside Ave #302",price:380000,sqft:1400,beds:2,baths:2,soldDate:"2026-02-20",daysOnMarket:20,pricePerSqft:271.43},
+    {address:"7650 Merrill Rd",price:205000,sqft:1180,beds:3,baths:1.5,soldDate:"2026-03-25",daysOnMarket:65,pricePerSqft:173.73},
+    {address:"2200 Beach Blvd",price:335000,sqft:1950,beds:4,baths:2.5,soldDate:"2026-04-02",daysOnMarket:28,pricePerSqft:171.79},
+    {address:"5670 Timuquana Rd",price:275000,sqft:1650,beds:3,baths:2,soldDate:"2026-01-28",daysOnMarket:42,pricePerSqft:166.67},
+  ]
+};
+
+// Keep legacy reference for backward compat
+const COMPARABLES = COMPARABLES_BY_CITY.Tampa;
+
+function getCompsForCity(cityName) {
+  const key = Object.keys(COMPARABLES_BY_CITY).find(k => k.toLowerCase() === (cityName||"").toLowerCase());
+  return key ? COMPARABLES_BY_CITY[key] : COMPARABLES_BY_CITY.Tampa;
+}
+
+function getCountyForCity(cityName) {
+  const c = (cityName||"").toLowerCase();
+  if (c === "miami") return "Miami-Dade";
+  if (c === "orlando") return "Orange";
+  if (c === "jacksonville") return "Duval";
+  return "Hillsborough";
+}
 
 const MARKET = {
   medianPrice:385000, avgPricePerSqft:181.70, activeListings:342, avgDaysOnMarket:38,
@@ -241,14 +484,14 @@ const DEFAULT_CONTINGENCIES = [
    ═══════════════════════════════════════════════════════════════════════ */
 
 function App() {
-  const [step, setStep] = useState("input"); // input | results | analysis | offer
+  const [step, setStep] = useState("register"); // register | input | results | analysis | offer
   const [sel, setSel] = useState(null);
   const [form, setForm] = useState({
     propertyType:"Single Family", city:"Tampa", state:"FL", zip:"33607",
     minBeds:3, minBaths:2, maxPrice:450000, downPayment:60000,
     minAcres:"", maxAcres:"", minYearBuilt:"",
     nearSchool:true, nearHighway:false, lowCrime:true, noFloodZone:false, noForeclosure:false,
-    nearHospital:false, nearShopping:false, nearPublicTransit:false, nearJobsite:false,
+    nearHospital:false, nearShopping:false, nearPublicTransit:false,
     waterfront:false, poolRequired:false, garageRequired:false, gatedCommunity:false,
     cornerLot:false, noHOA:false, newConstruction:false, noLisPendens:false,
     fencedYard:false, singleStory:false
@@ -289,6 +532,7 @@ function App() {
   const [countyName, setCountyName] = useState("Hillsborough");
   const [manualOfferPrice, setManualOfferPrice] = useState(0); // 0 = use AI suggested
   const [hasBuyerAgent, setHasBuyerAgent] = useState(false);
+  const [hasListingAgent, setHasListingAgent] = useState(true);
 
   // Registration & payment state
   const [userRegistered, setUserRegistered] = useState(false);
@@ -298,7 +542,27 @@ function App() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [activeTooltip, setActiveTooltip] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const OFFER_FEE = 29.99;
+  const [isDeveloper, setIsDeveloper] = useState(false);
+  const [showDevLogin, setShowDevLogin] = useState(false);
+  const [devUser, setDevUser] = useState("");
+  const [devPass, setDevPass] = useState("");
+  const [devError, setDevError] = useState("");
+  const OFFER_FEE = 4.99;
+
+  // Preview mode and toast state
+  const [previewMode, setPreviewMode] = useState(true);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
+
+  // Lookup button animation states
+  const [lookupParcel, setLookupParcel] = useState(false);
+  const [lookupLegal, setLookupLegal] = useState(false);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 2500);
+  };
 
   // Tooltip helper component
   const Tip = ({id, text}) => (
@@ -313,6 +577,15 @@ function App() {
     if(activeTooltip) document.addEventListener("click",close);
     return ()=>document.removeEventListener("click",close);
   },[activeTooltip]);
+
+  // Auto-populate parcel & legal desc when listing is selected
+  React.useEffect(()=>{
+    if(sel){
+      if(sel.parcelId && !taxParcelId) setTaxParcelId(sel.parcelId);
+      if(sel.legalDesc && !legalDescription) setLegalDescription(sel.legalDesc);
+      setCountyName(getCountyForCity(sel.city));
+    }
+  },[sel]);
 
   // Tooltip definitions
   const TIPS = {
@@ -346,16 +619,33 @@ function App() {
   const u=(k,v)=>setForm({...form,[k]:v});
   const isLandType = form.propertyType==="Farm" || form.propertyType==="Land/Lot";
 
-  // Handle "Generate Offer Letter" click — gate behind registration
+  // Filter listings based on search criteria
+  const getFilteredListings = () => {
+    return LISTINGS.filter(l => {
+      // City or zip match
+      const cityMatch = l.city.toLowerCase().includes(form.city.toLowerCase());
+      const zipMatch = l.zip.includes(form.zip);
+      if (!cityMatch && !zipMatch) return false;
+      // Price
+      if (form.maxPrice && l.price > form.maxPrice) return false;
+      // Beds
+      if (form.minBeds && l.beds < form.minBeds) return false;
+      // Baths
+      if (form.minBaths && l.baths < form.minBaths) return false;
+      // Property type
+      if (form.propertyType && l.type !== form.propertyType) return false;
+      return true;
+    });
+  };
+
+  // Handle "Generate Offer Letter" click — user is already registered
   const handleGenerateOffer = (l) => {
     if(l.floodRisk!=="Minimal") setContingencies(prev=>prev.map(c=>c.id===4?{...c,enabled:true}:c));
     if(l.hoa>0) setContingencies(prev=>prev.map(c=>c.id===8?{...c,enabled:true}:c));
     if(l.permits.open>0) setContingencies(prev=>prev.map(c=>c.id===11?{...c,enabled:true}:c));
-    if(!userRegistered) {
-      setShowRegModal(true);
-    } else {
-      setStep("offer");
-    }
+    // Reset preview mode for new offers
+    setPreviewMode(true);
+    setStep("offer");
   };
 
   // Handle print — gate behind payment
@@ -367,34 +657,71 @@ function App() {
     }
   };
 
-  // Registration Modal
-  const RegModal = () => showRegModal ? (
-    <div className="modal-overlay" onClick={()=>setShowRegModal(false)}>
-      <div className="modal-card" onClick={e=>e.stopPropagation()}>
+  // ─── SCREEN 0: REGISTRATION (full-page, non-dismissable) ──────────
+  if (step==="register") return (
+    <div className="modal-overlay" style={{background:"linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%)"}}>
+      <div className="modal-card" style={{maxWidth:460}}>
         <div style={{textAlign:"center",marginBottom:24}}>
           <div style={{background:"#2563eb",borderRadius:12,padding:10,display:"inline-flex",marginBottom:12}}><HomeIcon s={28}/></div>
-          <h2 style={{margin:"0 0 4px",fontSize:20,fontWeight:700,color:"#111827"}}>Create Your Free Account</h2>
-          <p style={{margin:0,fontSize:13,color:"#6b7280"}}>Register to access the AI-powered offer letter generator</p>
+          <h2 style={{margin:"0 0 4px",fontSize:20,fontWeight:700,color:"#111827"}}>Welcome to PropertyAgent Pro</h2>
+          <p style={{margin:0,fontSize:13,color:"#6b7280"}}>Create your free account to access AI-powered property analysis and offer generation</p>
         </div>
-        <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Full Name *</label>
-        <input className="modal-input" placeholder="John Smith" value={registrationInfo.name} onChange={e=>setRegistrationInfo({...registrationInfo,name:e.target.value})}/>
-        <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Email Address *</label>
-        <input className="modal-input" type="email" placeholder="john@example.com" value={registrationInfo.email} onChange={e=>setRegistrationInfo({...registrationInfo,email:e.target.value})}/>
-        <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Phone Number *</label>
-        <input className="modal-input" type="tel" placeholder="(555) 123-4567" value={registrationInfo.phone} onChange={e=>setRegistrationInfo({...registrationInfo,phone:e.target.value})}/>
-        <button className="modal-btn" disabled={!registrationInfo.name||!registrationInfo.email||!registrationInfo.phone}
-          style={{background:registrationInfo.name&&registrationInfo.email&&registrationInfo.phone?"linear-gradient(135deg,#2563eb,#1e40af)":"#d1d5db",color:registrationInfo.name&&registrationInfo.email&&registrationInfo.phone?"#fff":"#9ca3af",marginTop:8}}
-          onClick={()=>{
-            fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registrationInfo)})
-              .then(r=>r.json()).then(d=>{if(d.success)setCurrentUserId(d.user.id);}).catch(()=>{});
-            setUserRegistered(true);setShowRegModal(false);setBuyerInfo(prev=>({...prev,name:registrationInfo.name,email:registrationInfo.email,phone:registrationInfo.phone}));setStep("offer");
-          }}>
-          🚀 Continue to Offer Generator
-        </button>
-        <p style={{fontSize:11,color:"#9ca3af",textAlign:"center",marginTop:12,marginBottom:0}}>Your information is stored securely and never shared with third parties.</p>
+        {!showDevLogin ? (
+          <>
+            <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Full Name *</label>
+            <input className="modal-input" placeholder="John Smith" value={registrationInfo.name} onChange={e=>setRegistrationInfo({...registrationInfo,name:e.target.value})}/>
+            <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Email Address *</label>
+            <input className="modal-input" type="email" placeholder="john@example.com" value={registrationInfo.email} onChange={e=>setRegistrationInfo({...registrationInfo,email:e.target.value})}/>
+            <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Phone Number *</label>
+            <input className="modal-input" type="tel" placeholder="(555) 123-4567" value={registrationInfo.phone} onChange={e=>setRegistrationInfo({...registrationInfo,phone:e.target.value})}/>
+            <button className="modal-btn" disabled={!registrationInfo.name||!registrationInfo.email||!registrationInfo.phone}
+              style={{background:registrationInfo.name&&registrationInfo.email&&registrationInfo.phone?"linear-gradient(135deg,#2563eb,#1e40af)":"#d1d5db",color:registrationInfo.name&&registrationInfo.email&&registrationInfo.phone?"#fff":"#9ca3af",marginTop:8}}
+              onClick={()=>{
+                fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registrationInfo)})
+                  .then(r=>r.json()).then(d=>{if(d.success)setCurrentUserId(d.user.id);}).catch(()=>{});
+                setUserRegistered(true);
+                setBuyerInfo(prev=>({...prev,name:registrationInfo.name,email:registrationInfo.email,phone:registrationInfo.phone}));
+                setStep("input");
+              }}>
+              Get Started — It's Free
+            </button>
+            <p style={{fontSize:11,color:"#9ca3af",textAlign:"center",marginTop:12,marginBottom:0}}>Your information is stored securely and never shared with third parties.</p>
+            <div style={{textAlign:"center",marginTop:16}}>
+              <button onClick={()=>{setShowDevLogin(true);setDevError("");}} style={{background:"none",border:"none",color:"#9ca3af",fontSize:11,cursor:"pointer",textDecoration:"none"}}>
+                Developer Access
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Username</label>
+            <input className="modal-input" placeholder="Username" value={devUser} onChange={e=>setDevUser(e.target.value)}/>
+            <label style={{display:"block",fontSize:12,fontWeight:600,color:"#374151",marginBottom:4}}>Password</label>
+            <input className="modal-input" type="password" placeholder="Password" value={devPass} onChange={e=>setDevPass(e.target.value)}/>
+            {devError && <p style={{color:"#dc2626",fontSize:12,margin:"0 0 8px"}}>{devError}</p>}
+            <button className="modal-btn" style={{background:"linear-gradient(135deg,#374151,#1f2937)",color:"#fff",marginTop:8}}
+              onClick={()=>{
+                if(devUser==="admin" && devPass==="PropAgent2026!"){
+                  setIsDeveloper(true);
+                  setUserRegistered(true);
+                  setBuyerInfo(prev=>({...prev,name:"Developer",email:"dev@propertyagent.com",phone:"(000) 000-0000"}));
+                  setStep("input");
+                } else {
+                  setDevError("Invalid credentials");
+                }
+              }}>
+              Sign In
+            </button>
+            <div style={{textAlign:"center",marginTop:12}}>
+              <button onClick={()=>{setShowDevLogin(false);setDevError("");}} style={{background:"none",border:"none",color:"#2563eb",fontSize:12,cursor:"pointer"}}>
+                Back to Registration
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
-  ) : null;
+  );
 
   // Payment Modal
   const PayModal = () => showPaymentModal ? (
@@ -403,7 +730,7 @@ function App() {
         <div style={{textAlign:"center",marginBottom:24}}>
           <div style={{fontSize:40,marginBottom:8}}>🔒</div>
           <h2 style={{margin:"0 0 4px",fontSize:20,fontWeight:700,color:"#111827"}}>Print Your Offer Letter</h2>
-          <p style={{margin:0,fontSize:13,color:"#6b7280"}}>One-time fee per offer — unlimited revisions before printing</p>
+          <p style={{margin:0,fontSize:13,color:"#6b7280"}}>One-time fee per offer — unlimited revisions included</p>
         </div>
         <div style={{background:"#f8fafc",border:"1px solid #e5e7eb",borderRadius:12,padding:20,marginBottom:20}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:12}}>
@@ -414,8 +741,8 @@ function App() {
             ✅ Broker-quality FL residential purchase contract<br/>
             ✅ Customized contingencies & legal disclosures<br/>
             ✅ AI-powered pricing analysis included<br/>
-            ✅ Print or save as PDF — unlimited copies<br/>
-            ✅ Edit and re-print at any time
+            ✅ Unlimited revisions — edit and re-print anytime<br/>
+            ✅ Print or save as PDF — unlimited copies
           </div>
         </div>
         <div style={{border:"1px solid #e5e7eb",borderRadius:10,padding:16,marginBottom:16}}>
@@ -435,11 +762,16 @@ function App() {
             }
             setHasPaid(true);setShowPaymentModal(false);setTimeout(()=>window.print(),300);
           }}>
-          💳 Pay ${OFFER_FEE} & Print
+          Pay ${OFFER_FEE} & Print
         </button>
-        <p style={{fontSize:11,color:"#9ca3af",textAlign:"center",marginTop:12,marginBottom:0}}>🔒 Secured with 256-bit SSL encryption. This is a simulated payment for prototype purposes.</p>
+        <p style={{fontSize:11,color:"#9ca3af",textAlign:"center",marginTop:12,marginBottom:0}}>Secured with 256-bit SSL encryption. This is a simulated payment for prototype purposes.</p>
       </div>
     </div>
+  ) : null;
+
+  // Toast component
+  const Toast = () => toastVisible ? (
+    <div className="toast-notification">{toastMessage}</div>
   ) : null;
 
   // ─── SCREEN 1: INPUT ───────────────────────────────────────────────
@@ -502,7 +834,6 @@ function App() {
               {key:"nearHospital",label:"Near Hospital/Medical",icon:"🏥"},
               {key:"nearShopping",label:"Near Shopping/Dining",icon:"🛒"},
               {key:"nearPublicTransit",label:"Near Public Transit",icon:"🚌"},
-              {key:"nearJobsite",label:"Near My Jobsite",icon:"💼"},
             ].map(c=>(
               <label key={c.key} className={form[c.key]?"checkbox-on":"checkbox-off"}
                 style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderRadius:8,border:"1px solid",cursor:"pointer",fontSize:13,fontWeight:500}}>
@@ -580,14 +911,17 @@ function App() {
   );
 
   // ─── SCREEN 2: RESULTS ─────────────────────────────────────────────
-  if (step==="results") return (
+  if (step==="results") {
+    const filteredListings = getFilteredListings();
+
+    return (
     <div className="gradient-bg min-h-screen">
       <header style={{background:"#fff",borderBottom:"1px solid #e5e7eb",boxShadow:"0 1px 3px rgba(0,0,0,.06)"}}>
         <div style={{maxWidth:1000,margin:"0 auto",padding:"16px 24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
             <div style={{background:"#2563eb",borderRadius:10,padding:8,display:"flex"}}><HomeIcon/></div>
             <div><h1 style={{fontSize:20,fontWeight:700,margin:0,color:"#111827"}}>PropertyAgent Pro</h1>
-            <p style={{fontSize:13,color:"#6b7280",margin:0}}>{form.city}, {form.state} {form.zip} — {LISTINGS.length} properties found</p></div>
+            <p style={{fontSize:13,color:"#6b7280",margin:0}}>{form.city}, {form.state} {form.zip} — {filteredListings.length} properties found</p></div>
           </div>
           <button onClick={()=>setStep("input")} style={{background:"none",border:"none",color:"#2563eb",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
             <ChevLeft/> New Search
@@ -617,10 +951,20 @@ function App() {
           </div>
         </div>
 
-        {LISTINGS.map(l=>{
+        {filteredListings.length === 0 && (
+          <div className="card" style={{padding:40,textAlign:"center"}}>
+            <p style={{fontSize:18,color:"#6b7280",margin:0}}>No properties match your search criteria.</p>
+            <p style={{fontSize:13,color:"#9ca3af",margin:"8px 0 0"}}>Try broadening your search — adjust city, price, or property type.</p>
+            <button onClick={()=>setStep("input")} style={{marginTop:16,background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"10px 20px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+              Modify Search
+            </button>
+          </div>
+        )}
+
+        {filteredListings.map(l=>{
           const mf=multiFactor(l);
           return (
-            <div key={l.id} className="card card-hover" style={{padding:20,marginBottom:16}} onClick={()=>{setSel(l);setStep("analysis");}}>
+            <div key={l.id} className="card card-hover" style={{padding:20,marginBottom:16}} onClick={()=>{setSel(l);setTaxParcelId("");setLegalDescription("");setStep("analysis");}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                 <div style={{flex:1}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4,flexWrap:"wrap"}}>
@@ -654,12 +998,14 @@ function App() {
         })}
       </div>
     </div>
-  );
+    );
+  }
 
   // ─── SCREEN 3: ANALYSIS ────────────────────────────────────────────
   if (step==="analysis" && sel) {
     const l=sel;
-    const ca=compBased(l,COMPARABLES);
+    const cityComps = getCompsForCity(l.city);
+    const ca=compBased(l,cityComps);
     const mf=multiFactor(l);
     const of=reconcile(ca.price,mf.price,l);
     const loan=of.rec-form.downPayment;
@@ -686,7 +1032,7 @@ function App() {
                 handleGenerateOffer(l);
               }}
                 style={{background:"#16a34a",color:"#fff",border:"none",borderRadius:8,padding:"8px 16px",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
-                📄 Generate Offer Letter
+                Generate Offer Letter
               </button>
             </div>
           </div>
@@ -697,7 +1043,7 @@ function App() {
           {/* HERO: SUGGESTED OFFER */}
           <div className="card" style={{overflow:"hidden"}}>
             <div className="gradient-hero" style={{padding:"24px 32px",color:"#fff"}}>
-              <p style={{fontSize:12,fontWeight:500,opacity:0.7,margin:"0 0 4px",letterSpacing:1}}>🎯 AI-POWERED SUGGESTED OFFER</p>
+              <p style={{fontSize:12,fontWeight:500,opacity:0.7,margin:"0 0 4px",letterSpacing:1}}>AI-POWERED SUGGESTED OFFER</p>
               <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",flexWrap:"wrap",gap:16}}>
                 <div>
                   <p style={{fontSize:38,fontWeight:700,margin:0}}>${of.rec.toLocaleString()}</p>
@@ -723,7 +1069,7 @@ function App() {
           {/* TWO METHODS */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
             <div className="card" style={{padding:24}}>
-              <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>📊 Method 1: Comparable Sales</h3>
+              <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>Method 1: Comparable Sales</h3>
               <div style={{background:"#f9fafb",borderRadius:8,padding:16,marginBottom:16}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
                   <span style={{fontSize:12,color:"#6b7280"}}>Base (avg comp $/sqft x sqft)</span>
@@ -742,7 +1088,7 @@ function App() {
                 </div>
               </div>
               <h4 style={{fontSize:12,fontWeight:600,color:"#6b7280",marginBottom:8}}>Recent Comps</h4>
-              {COMPARABLES.map((c,i)=>(
+              {cityComps.map((c,i)=>(
                 <div key={i} style={{display:"flex",justifyContent:"space-between",padding:8,background:i%2===0?"#f9fafb":"#fff",borderRadius:6,marginBottom:4,fontSize:12}}>
                   <div>
                     <p style={{fontWeight:500,color:"#111827",margin:0}}>{c.address}</p>
@@ -757,7 +1103,7 @@ function App() {
             </div>
 
             <div className="card" style={{padding:24}}>
-              <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>🧮 Method 2: Multi-Factor Scoring</h3>
+              <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>Method 2: Multi-Factor Scoring</h3>
               <div style={{background:"#f9fafb",borderRadius:8,padding:16,marginBottom:16}}>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
                   <span style={{fontSize:12,color:"#6b7280"}}>Composite Negotiation Score</span>
@@ -789,7 +1135,7 @@ function App() {
           {/* PROPERTY DATA CARDS */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:24}}>
             <div className="card" style={{padding:20}}>
-              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>💧 FEMA Flood Zone</h4>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>FEMA Flood Zone</h4>
               <div style={{textAlign:"center",padding:"12px 0"}}>
                 <p style={{fontSize:28,fontWeight:700,color:"#111827",margin:0}}>Zone {l.floodZone}</p>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:4,margin:"4px 0"}}>
@@ -801,7 +1147,7 @@ function App() {
               </div>
             </div>
             <div className="card" style={{padding:20}}>
-              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>🛡️ Crime Analysis</h4>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>Crime Analysis</h4>
               <div style={{textAlign:"center",padding:"12px 0"}}>
                 <p style={{fontSize:28,fontWeight:700,color:"#111827",margin:0}}>Grade {l.crimeGrade}</p>
                 <p style={{fontSize:13,color:"#6b7280",margin:"4px 0"}}>Crime Index: {l.crimeScore}/100</p>
@@ -810,7 +1156,7 @@ function App() {
               </div>
             </div>
             <div className="card" style={{padding:20}}>
-              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>📋 Building Permits</h4>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>Building Permits</h4>
               <div style={{textAlign:"center",padding:"12px 0"}}>
                 <div style={{display:"flex",justifyContent:"center",gap:32,marginBottom:8}}>
                   <div><p style={{fontSize:28,fontWeight:700,color:l.permits.open>0?"#dc2626":"#16a34a",margin:0}}>{l.permits.open}</p><p style={{fontSize:11,color:"#6b7280",margin:0}}>Open</p></div>
@@ -824,7 +1170,7 @@ function App() {
 
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
             <div className="card" style={{padding:20}}>
-              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>🏛️ County Property Records</h4>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>County Property Records</h4>
               {[
                 {l:"Tax Assessed Value",v:"$"+l.taxAssessed.toLocaleString()+" ("+l.taxYear+")"},
                 {l:"Annual Property Tax",v:"$"+l.annualTax.toLocaleString()},
@@ -841,7 +1187,7 @@ function App() {
               ))}
             </div>
             <div className="card" style={{padding:20}}>
-              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>📈 Sale History & Timeline</h4>
+              <h4 style={{fontSize:13,fontWeight:700,color:"#111827",marginTop:0}}>Sale History & Timeline</h4>
               <div style={{display:"flex",alignItems:"center",gap:8,padding:8,background:"#eff6ff",borderRadius:8,marginBottom:8}}>
                 <div style={{width:8,height:8,borderRadius:"50%",background:"#3b82f6",flexShrink:0}}/>
                 <div><p style={{fontSize:12,fontWeight:500,color:"#111827",margin:0}}>Current: ${l.price.toLocaleString()}</p>
@@ -866,7 +1212,7 @@ function App() {
 
           {/* WHY THIS PRICE */}
           <div className="card" style={{padding:24}}>
-            <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>ℹ️ Why This Offer Price — Supporting Analysis</h3>
+            <h3 style={{fontSize:14,fontWeight:700,color:"#111827",marginTop:0,marginBottom:16}}>Why This Offer Price — Supporting Analysis</h3>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
               <div>
                 <h4 style={{fontSize:11,fontWeight:600,color:"#6b7280",textTransform:"uppercase",marginBottom:8}}>Factors Favoring Lower Offer</h4>
@@ -920,12 +1266,10 @@ function App() {
           <div className="no-print" style={{textAlign:"center"}}>
             <button onClick={()=>handleGenerateOffer(l)}
               style={{background:"linear-gradient(135deg,#16a34a,#15803d)",color:"#fff",border:"none",borderRadius:10,padding:"16px 48px",fontSize:16,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 12px rgba(22,163,74,0.3)"}}>
-              📄 Generate Printable Offer Letter
+              Generate Printable Offer Letter
             </button>
-            {!userRegistered && <p style={{fontSize:12,color:"#6b7280",marginTop:8}}>Free registration required to generate offer letters</p>}
           </div>
         </div>
-        <RegModal/>
       </div>
     );
   }
@@ -933,7 +1277,8 @@ function App() {
   // ─── SCREEN 4: OFFER LETTER ────────────────────────────────────────
   if (step==="offer" && sel) {
     const l=sel;
-    const ca=compBased(l,COMPARABLES);
+    const cityComps = getCompsForCity(l.city);
+    const ca=compBased(l,cityComps);
     const mf=multiFactor(l);
     const of=reconcile(ca.price,mf.price,l);
     const offerPrice = manualOfferPrice > 0 ? manualOfferPrice : of.rec;
@@ -956,295 +1301,15 @@ function App() {
       l.foreclosure && "The property is bank-owned (foreclosure), which typically involves as-is condition and may require significant renovation investment by the buyer.",
       l.lisPendens && "A lis pendens has been filed against this property, indicating pending litigation that creates title uncertainty and additional risk for the buyer.",
       l.permits.open>0 && "There are "+l.permits.open+" open building permit(s) on the property, which may indicate incomplete work and could complicate financing or insurance.",
-      "Comparable sales analysis of "+COMPARABLES.length+" recently sold properties in the area shows an average price per square foot of $"+ca.avgPSF+", supporting a base valuation of $"+ca.baseRaw.toLocaleString()+" before risk adjustments.",
+      "Comparable sales analysis of "+cityComps.length+" recently sold properties in the area shows an average price per square foot of $"+ca.avgPSF+", supporting a base valuation of $"+ca.baseRaw.toLocaleString()+" before risk adjustments.",
       MARKET.priceChangeYoY<0 && "Area home prices have declined "+MARKET.priceChangeYoY+"% year-over-year, with "+MARKET.monthlyInventory+" months of inventory indicating a buyer-favorable market.",
       "The county tax assessed value is $"+l.taxAssessed.toLocaleString()+", which is "+Math.abs(((l.price/l.taxAssessed-1)*100)).toFixed(1)+"% "+(l.price>l.taxAssessed?"above":"below")+" the current list price.",
       l.previousListings>=2 && "The property has been listed "+(l.previousListings+1)+" separate times, suggesting previous market rejection at higher price points.",
     ].filter(Boolean);
 
-    return (
-      <div className="gradient-bg min-h-screen">
-        {/* EDITOR TOOLBAR */}
-        <div className="no-print" style={{background:"#1e293b",color:"#fff",padding:"12px 0",position:"sticky",top:0,zIndex:100}}>
-          <div style={{maxWidth:900,margin:"0 auto",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <button onClick={()=>setStep("analysis")} style={{background:"none",border:"none",color:"#93c5fd",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
-                <ChevLeft c="#93c5fd"/> Back to Analysis
-              </button>
-              <span style={{color:"#475569"}}>|</span>
-              <span style={{fontSize:13,color:"#94a3b8"}}>📄 Residential Sale & Purchase Contract Editor</span>
-            </div>
-            <button onClick={handlePrint}
-              style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 20px",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
-              <PrintIcon/> Print / Save as PDF
-            </button>
-          </div>
-        </div>
-
-        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
-
-          {/* ═══ EDITOR PANEL 0: OFFER PRICE ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20,background:"linear-gradient(135deg,#eff6ff,#f0fdf4)",border:"1px solid #93c5fd"}}>
-            {sectHead("🎯","Your Offer Price")}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,alignItems:"end"}}>
-              <div>
-                <label style={lbl}>Offer Amount ($)</label>
-                <input type="number" value={manualOfferPrice > 0 ? manualOfferPrice : of.rec}
-                  onChange={e=>setManualOfferPrice(+e.target.value)}
-                  style={{...fld,fontSize:18,fontWeight:700,padding:"12px 14px",borderColor:"#3b82f6"}}/>
-                <p style={{fontSize:11,color:"#6b7280",margin:"6px 0 0"}}>
-                  AI Suggested: <strong style={{color:"#2563eb"}}>${of.rec.toLocaleString()}</strong> (Range: ${of.lo.toLocaleString()} — ${of.hi.toLocaleString()})
-                </p>
-              </div>
-              <div>
-                <div style={{background:"#fff",borderRadius:8,padding:14,border:"1px solid #e5e7eb"}}>
-                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
-                    <span style={{color:"#6b7280"}}>List Price:</span>
-                    <span style={{textDecoration:"line-through",color:"#ef4444"}}>${l.price.toLocaleString()}</span>
-                  </div>
-                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
-                    <span style={{color:"#6b7280"}}>Your Offer:</span>
-                    <span style={{fontWeight:700,color:"#111827"}}>${offerPrice.toLocaleString()}</span>
-                  </div>
-                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
-                    <span style={{color:"#6b7280"}}>Savings:</span>
-                    <span style={{fontWeight:600,color:offerSave>=0?"#16a34a":"#dc2626"}}>${offerSave.toLocaleString()} ({offerSavePct}%)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {manualOfferPrice > 0 && manualOfferPrice !== of.rec && (
-              <div style={{marginTop:12,display:"flex",alignItems:"center",gap:8}}>
-                <span style={{fontSize:12,color:"#6b7280"}}>Using your manual offer price.</span>
-                <button onClick={()=>setManualOfferPrice(0)} style={{background:"none",border:"none",color:"#2563eb",fontSize:12,cursor:"pointer",textDecoration:"underline"}}>
-                  Reset to AI suggestion (${of.rec.toLocaleString()})
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* ═══ EDITOR PANEL 1: BUYER ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("👤","Buyer Information")}
-            <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:12,marginBottom:16}}>
-              <p style={{fontSize:12,color:"#1e40af",margin:0,lineHeight:1.5}}>
-                <strong>Save on commission:</strong> This contract is designed so you can submit an offer directly to the seller or listing agent without needing your own buyer's agent. If you do have a buyer's agent, toggle the option below to include their information.
-              </p>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-              {[
-                {label:"Buyer Full Legal Name(s)",key:"name",ph:"John A. Smith and Jane B. Smith"},
-                {label:"Current Address",key:"address",ph:"123 Current St"},
-                {label:"City",key:"city",ph:"Tampa"},
-                {label:"State",key:"state",ph:"FL"},
-                {label:"ZIP",key:"zip",ph:"33601"},
-                {label:"Phone",key:"phone",ph:"(813) 555-0100"},
-                {label:"Email",key:"email",ph:"buyer@email.com"},
-              ].map(f=>(
-                <div key={f.key}>
-                  <label style={lbl}>{f.label}</label>
-                  <input value={buyerInfo[f.key]} onChange={e=>setBuyerInfo({...buyerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
-                </div>
-              ))}
-            </div>
-
-            {/* Optional Agent Toggle */}
-            <div style={{marginTop:20,padding:14,background:hasBuyerAgent?"#f0fdf4":"#f9fafb",borderRadius:8,border:"1px solid "+(hasBuyerAgent?"#bbf7d0":"#e5e7eb")}}>
-              <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,fontWeight:600,color:hasBuyerAgent?"#166534":"#6b7280"}}>
-                <input type="checkbox" checked={hasBuyerAgent} onChange={e=>setHasBuyerAgent(e.target.checked)} style={{accentColor:"#16a34a"}}/>
-                I have a Buyer's Agent (optional)
-              </label>
-              {!hasBuyerAgent && <p style={{fontSize:11,color:"#9ca3af",margin:"6px 0 0 26px"}}>Leave unchecked if you are representing yourself. You may save 2.5-3% in buyer agent commission.</p>}
-            </div>
-            {hasBuyerAgent && (
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,padding:14,background:"#f9fafb",borderRadius:8}}>
-                {[
-                  {label:"Agent Name",key:"agent",ph:"Licensed agent name"},
-                  {label:"Agent License #",key:"agentLicense",ph:"SL3XXXXXX"},
-                  {label:"Agent Phone",key:"agentPhone",ph:"(813) 555-0200"},
-                  {label:"Agent Email",key:"agentEmail",ph:"agent@brokerage.com"},
-                  {label:"Brokerage Name",key:"brokerage",ph:"ABC Realty, Inc."},
-                  {label:"Brokerage License #",key:"brokerageLicense",ph:"CQ10XXXXX"},
-                ].map(f=>(
-                  <div key={f.key}>
-                    <label style={lbl}>{f.label}</label>
-                    <input value={buyerInfo[f.key]} onChange={e=>setBuyerInfo({...buyerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("🏠","Seller Information")}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-              {[
-                {label:"Seller Full Legal Name(s)",key:"name",ph:"Current property owner(s)"},
-                {label:"Seller Address",key:"address",ph:"(if known)"},
-                {label:"Listing Agent Name",key:"agent",ph:"Listing agent name"},
-                {label:"Listing Agent License #",key:"agentLicense",ph:"SL3XXXXXX"},
-                {label:"Listing Agent Phone",key:"agentPhone",ph:"(813) 555-0300"},
-                {label:"Listing Brokerage",key:"brokerage",ph:"XYZ Realty, LLC"},
-              ].map(f=>(
-                <div key={f.key}>
-                  <label style={lbl}>{f.label}</label>
-                  <input value={sellerInfo[f.key]} onChange={e=>setSellerInfo({...sellerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ═══ EDITOR PANEL 2: PROPERTY & LEGAL ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("📋","Property & Legal Description")}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-              <div><label style={lbl}>County</label><input value={countyName} onChange={e=>setCountyName(e.target.value)} placeholder="Hillsborough" style={fld}/></div>
-              <div><label style={lbl}>Tax Parcel ID / Folio # <Tip id="taxParcelId" text={TIPS.taxParcelId}/></label><input value={taxParcelId} onChange={e=>setTaxParcelId(e.target.value)} placeholder="e.g. A-12-29-18-3TK-000001-00001.0" style={fld}/></div>
-            </div>
-            <div style={{marginTop:14}}>
-              <label style={lbl}>Legal Description <Tip id="legalDescription" text={TIPS.legalDescription}/></label>
-              <textarea value={legalDescription} onChange={e=>setLegalDescription(e.target.value)} placeholder="Lot 12, Block 3, SUNSET PARK SUBDIVISION, as recorded in Plat Book 45, Page 78, of the Public Records of Hillsborough County, Florida."
-                style={{...fld,minHeight:60,resize:"vertical"}}/>
-            </div>
-          </div>
-
-          {/* ═══ EDITOR PANEL 3: FINANCIAL TERMS ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("💰","Financial Terms")}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
-              <div><label style={lbl}>Earnest Money Deposit ($) <Tip id="earnestMoney" text={TIPS.earnestMoney}/></label><input type="number" value={earnestMoney} onChange={e=>setEarnestMoney(+e.target.value)} style={fld}/></div>
-              <div><label style={lbl}>Additional Deposit ($) <Tip id="additionalDeposit" text={TIPS.additionalDeposit}/></label><input type="number" value={additionalDeposit} onChange={e=>setAdditionalDeposit(+e.target.value)} style={fld}/></div>
-              <div><label style={lbl}>Deposit Deadline (days) <Tip id="depositDeadline" text={TIPS.depositDeadline}/></label><input type="number" value={depositDeadline} onChange={e=>setDepositDeadline(+e.target.value)} style={fld}/></div>
-              <div><label style={lbl}>Escrow / Title Agent <Tip id="escrowAgent" text={TIPS.escrowAgent}/></label><input value={escrowAgent} onChange={e=>setEscrowAgent(e.target.value)} placeholder="Title company name" style={fld}/></div>
-              <div><label style={lbl}>Financing Type <Tip id="financingType" text={TIPS.financingType}/></label>
-                <select value={financingType} onChange={e=>setFinancingType(e.target.value)} style={fld}>
-                  <option>Conventional</option><option>FHA</option><option>VA</option><option>USDA</option><option>Cash (No Financing)</option><option>Seller Financing</option><option>Assumption</option>
-                </select>
-              </div>
-              <div><label style={lbl}>Loan Term (years) <Tip id="loanTerm" text={TIPS.loanTerm}/></label><input type="number" value={loanTerm} onChange={e=>setLoanTerm(+e.target.value)} style={fld}/></div>
-              <div><label style={lbl}>Interest Rate Cap (%) <Tip id="interestRateCap" text={TIPS.interestRateCap}/></label><input type="number" step="0.125" value={interestRateCap} onChange={e=>setInterestRateCap(+e.target.value)} style={fld}/></div>
-              <div><label style={lbl}>Seller Concessions ($) <Tip id="sellerConcessions" text={TIPS.sellerConcessions}/></label><input type="number" value={sellerConcessions} onChange={e=>setSellerConcessions(+e.target.value)} style={fld}/></div>
-              <div style={{display:"flex",alignItems:"end",gap:8,paddingBottom:4}}>
-                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
-                  <input type="checkbox" checked={preApproval} onChange={e=>setPreApproval(e.target.checked)} style={{accentColor:"#2563eb"}}/>Pre-Approval Letter <Tip id="preApproval" text={TIPS.preApproval}/>
-                </label>
-              </div>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginTop:14}}>
-              <div><label style={lbl}>Closing Period (days) <Tip id="closingDays" text={TIPS.closingDays}/></label><input type="number" value={closingDays} onChange={e=>setClosingDays(+e.target.value)} style={fld}/></div>
-              <div><label style={lbl}>Offer Expires (days) <Tip id="offerExpDays" text={TIPS.offerExpDays}/></label><input type="number" value={offerExpDays} onChange={e=>setOfferExpDays(+e.target.value)} style={fld}/></div>
-            </div>
-          </div>
-
-          {/* ═══ EDITOR PANEL 4: TITLE, DEED, CLOSING ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("📜","Title, Deed & Closing")}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
-              <div><label style={lbl}>Title Company <Tip id="titleCompany" text={TIPS.titleCompany}/></label><input value={titleCompany} onChange={e=>setTitleCompany(e.target.value)} placeholder="Name of title company" style={fld}/></div>
-              <div><label style={lbl}>Title Insurance Paid By <Tip id="titlePaidBy" text={TIPS.titlePaidBy}/></label>
-                <select value={titlePaidBy} onChange={e=>setTitlePaidBy(e.target.value)} style={fld}><option>Buyer</option><option>Seller</option><option>Split 50/50</option></select>
-              </div>
-              <div><label style={lbl}>Deed Type <Tip id="deedType" text={TIPS.deedType}/></label>
-                <select value={deedType} onChange={e=>setDeedType(e.target.value)} style={fld}><option>Warranty Deed</option><option>Special Warranty Deed</option><option>Quitclaim Deed</option></select>
-              </div>
-              <div><label style={lbl}>Possession <Tip id="possessionAt" text={TIPS.possessionAt}/></label>
-                <select value={possessionAt} onChange={e=>setPossessionAt(e.target.value)} style={fld}><option>At Closing</option><option>Day After Closing</option><option>3 Days After Closing</option><option>Other (specify in Additional Terms)</option></select>
-              </div>
-              <div><label style={lbl}>Dispute Resolution <Tip id="disputeResolution" text={TIPS.disputeResolution}/></label>
-                <select value={disputeResolution} onChange={e=>setDisputeResolution(e.target.value)} style={fld}><option>Mediation then Litigation</option><option>Mediation then Arbitration</option><option>Litigation Only</option></select>
-              </div>
-              <div style={{display:"flex",flexDirection:"column",gap:8,justifyContent:"center"}}>
-                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
-                  <input type="checkbox" checked={surveyRequired} onChange={e=>setSurveyRequired(e.target.checked)} style={{accentColor:"#2563eb"}}/>Survey Required <Tip id="surveyRequired" text={TIPS.surveyRequired}/>
-                </label>
-                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
-                  <input type="checkbox" checked={walkthrough} onChange={e=>setWalkthrough(e.target.checked)} style={{accentColor:"#2563eb"}}/>Pre-Closing Walk-Through <Tip id="walkthrough" text={TIPS.walkthrough}/>
-                </label>
-                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
-                  <input type="checkbox" checked={assignable} onChange={e=>setAssignable(e.target.checked)} style={{accentColor:"#2563eb"}}/>Contract Assignable <Tip id="assignable" text={TIPS.assignable}/>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* ═══ EDITOR PANEL 5: PERSONAL PROPERTY & WARRANTY ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("🏷️","Personal Property & Home Warranty")}
-            <div>
-              <label style={lbl}>Personal Property Included with Sale <Tip id="personalProperty" text={TIPS.personalProperty}/></label>
-              <textarea value={personalPropertyIncluded} onChange={e=>setPersonalPropertyIncluded(e.target.value)}
-                style={{...fld,minHeight:50,resize:"vertical"}}/>
-            </div>
-            <div style={{marginTop:14}}>
-              <label style={lbl}>Items Excluded from Sale</label>
-              <textarea value={personalPropertyExcluded} onChange={e=>setPersonalPropertyExcluded(e.target.value)} placeholder="e.g. Dining room chandelier, detached storage shed contents"
-                style={{...fld,minHeight:40,resize:"vertical"}}/>
-            </div>
-            <div style={{display:"flex",gap:16,alignItems:"center",marginTop:14}}>
-              <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
-                <input type="checkbox" checked={homeWarranty} onChange={e=>setHomeWarranty(e.target.checked)} style={{accentColor:"#2563eb"}}/>Home Warranty <Tip id="homeWarranty" text={TIPS.homeWarranty}/>
-              </label>
-              {homeWarranty && <>
-                <div><label style={{...lbl,marginBottom:0,fontSize:11}}>Paid By</label>
-                  <select value={homeWarrantyPaidBy} onChange={e=>setHomeWarrantyPaidBy(e.target.value)} style={{...fld,width:120,padding:"4px 8px"}}>
-                    <option>Seller</option><option>Buyer</option>
-                  </select>
-                </div>
-                <div><label style={{...lbl,marginBottom:0,fontSize:11}}>Amount ($)</label>
-                  <input type="number" value={homeWarrantyAmount} onChange={e=>setHomeWarrantyAmount(+e.target.value)} style={{...fld,width:80,padding:"4px 8px"}}/>
-                </div>
-              </>}
-            </div>
-          </div>
-
-          {/* ═══ EDITOR PANEL 6: CONTINGENCIES ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("⚖️","Contingencies")}
-            <p style={{fontSize:12,color:"#6b7280",margin:"-8px 0 16px"}}>Toggle on/off and adjust timeframes. Enabled items appear in the printed contract.</p>
-            <div style={{display:"flex",flexDirection:"column",gap:8}}>
-              {contingencies.map((c,i)=>(
-                <div key={c.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:c.enabled?"#f0fdf4":"#f9fafb",borderRadius:8,border:"1px solid "+(c.enabled?"#bbf7d0":"#e5e7eb")}}>
-                  <input type="checkbox" checked={c.enabled} onChange={e=>{
-                    const nc=[...contingencies]; nc[i]={...nc[i],enabled:e.target.checked}; setContingencies(nc);
-                  }} style={{accentColor:"#16a34a",flexShrink:0}}/>
-                  <span style={{fontSize:13,fontWeight:600,color:c.enabled?"#166534":"#6b7280",flex:1}}>{c.label}</span>
-                  <div style={{display:"flex",alignItems:"center",gap:4}}>
-                    <input type="number" value={c.days} onChange={e=>{
-                      const nc=[...contingencies]; nc[i]={...nc[i],days:+e.target.value}; setContingencies(nc);
-                    }} style={{width:50,border:bl,borderRadius:6,padding:"4px 8px",fontSize:12,textAlign:"center"}}/>
-                    <span style={{fontSize:11,color:"#9ca3af"}}>days</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <h4 style={{fontSize:12,fontWeight:600,color:"#374151",marginTop:16,marginBottom:8}}>Add Custom Contingency</h4>
-            {customContingencies.map((cc,i)=>(
-              <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:8}}>
-                <textarea value={cc} onChange={e=>{const nc=[...customContingencies];nc[i]=e.target.value;setCustomContingencies(nc);}}
-                  style={{flex:1,border:bl,borderRadius:8,padding:"8px 12px",fontSize:12,minHeight:50,resize:"vertical"}}/>
-                <button onClick={()=>setCustomContingencies(customContingencies.filter((_,j)=>j!==i))}
-                  style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:6,padding:"6px 10px",fontSize:12,cursor:"pointer",fontWeight:600}}>Remove</button>
-              </div>
-            ))}
-            <div style={{display:"flex",gap:8}}>
-              <input value={newCustom} onChange={e=>setNewCustom(e.target.value)} placeholder="Type a custom contingency..."
-                style={{flex:1,border:bl,borderRadius:8,padding:"8px 12px",fontSize:13,boxSizing:"border-box"}}/>
-              <button onClick={()=>{if(newCustom.trim()){setCustomContingencies([...customContingencies,newCustom.trim()]);setNewCustom("");}}}
-                style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 16px",fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>+ Add</button>
-            </div>
-          </div>
-
-          {/* ═══ EDITOR PANEL 7: ADDITIONAL TERMS ═══ */}
-          <div className="card no-print" style={{padding:24,marginBottom:20}}>
-            {sectHead("📝","Additional Terms & Special Provisions")}
-            <textarea value={additionalTerms} onChange={e=>setAdditionalTerms(e.target.value)} placeholder="Seller concessions toward closing costs, repair credits, specific move-out dates, appliance warranties, or any other special provisions..."
-              style={{...fld,minHeight:80,resize:"vertical"}}/>
-          </div>
-
-          {/* ═══════════════════════════════════════════════════════════════════
-             PRINTABLE CONTRACT — BROKER-QUALITY
-             ═══════════════════════════════════════════════════════════════════ */}
-          <div className="card print-page" style={{padding:"48px 48px",lineHeight:1.7,fontSize:12,color:"#374151"}}>
+    // --- PRINTABLE CONTRACT CONTENT (shared between preview and print) ---
+    const PrintableContract = () => (
+      <div className="card print-page" style={{padding:"48px 48px",lineHeight:1.7,fontSize:12,color:"#374151"}}>
 
             {/* HEADER */}
             <div style={{textAlign:"center",marginBottom:24,borderBottom:"2px solid #1e40af",paddingBottom:16}}>
@@ -1268,8 +1333,9 @@ function App() {
                 <p style={{fontSize:11,fontWeight:700,color:"#1e40af",margin:"0 0 6px"}}>SELLER</p>
                 <p style={{margin:0}}><strong>{sellerInfo.name || "________________________"}</strong></p>
                 <p style={{margin:0,color:"#6b7280"}}>{sellerInfo.address || "________________________"}</p>
-                {sellerInfo.agent && <p style={{margin:"6px 0 0",fontSize:11,color:"#6b7280"}}>Listing Agent: {sellerInfo.agent} (Lic# {sellerInfo.agentLicense || "______"}) | {sellerInfo.agentPhone}</p>}
-                {sellerInfo.brokerage && <p style={{margin:0,fontSize:11,color:"#6b7280"}}>Brokerage: {sellerInfo.brokerage}</p>}
+                {hasListingAgent && sellerInfo.agent && <p style={{margin:"6px 0 0",fontSize:11,color:"#6b7280"}}>Listing Agent: {sellerInfo.agent} (Lic# {sellerInfo.agentLicense || "______"}) | {sellerInfo.agentPhone}</p>}
+                {hasListingAgent && sellerInfo.brokerage && <p style={{margin:0,fontSize:11,color:"#6b7280"}}>Brokerage: {sellerInfo.brokerage}</p>}
+                {!hasListingAgent && <p style={{margin:"6px 0 0",fontSize:11,color:"#6b7280",fontStyle:"italic"}}>Seller is self-represented (no listing agent)</p>}
               </div>
             </div>
 
@@ -1460,7 +1526,7 @@ function App() {
                 </div>
               </div>
 
-              <div style={{display:"grid",gridTemplateColumns:hasBuyerAgent?"1fr 1fr":"1fr",gap:40}}>
+              <div style={{display:"grid",gridTemplateColumns:(hasBuyerAgent && hasListingAgent)?"1fr 1fr":hasListingAgent||hasBuyerAgent?"1fr":"1fr",gap:40}}>
                 {hasBuyerAgent && (
                 <div>
                   <p style={{fontWeight:600,color:"#374151",margin:"0 0 30px",fontSize:11}}>BUYER'S AGENT / BROKER:</p>
@@ -1470,6 +1536,7 @@ function App() {
                   <p style={{fontSize:10,color:"#6b7280",margin:"2px 0 0"}}>Brokerage: {buyerInfo.brokerage||"________________________"} | Date: ________________________</p>
                 </div>
                 )}
+                {hasListingAgent && (
                 <div>
                   <p style={{fontWeight:600,color:"#374151",margin:"0 0 30px",fontSize:11}}>SELLER'S AGENT / BROKER:</p>
                   <div style={{borderBottom:"1px solid #9ca3af",marginBottom:4}}/>
@@ -1477,6 +1544,7 @@ function App() {
                   <p style={{fontSize:10,color:"#6b7280",margin:"4px 0 0"}}>Name: {sellerInfo.agent||"________________________"} | License #: {sellerInfo.agentLicense||"____________"}</p>
                   <p style={{fontSize:10,color:"#6b7280",margin:"2px 0 0"}}>Brokerage: {sellerInfo.brokerage||"________________________"} | Date: ________________________</p>
                 </div>
+                )}
               </div>
             </div>
 
@@ -1484,17 +1552,390 @@ function App() {
               <p style={{fontSize:10,color:"#9ca3af",margin:0,lineHeight:1.6}}>This Residential Sale and Purchase Contract was generated by PropertyAgent Pro. This document is designed to conform to the standards and structure of the Florida Realtors / Florida Bar Residential Contract. However, it has not been reviewed by the Florida Bar or the Florida Association of Realtors. <strong>BOTH BUYER AND SELLER ARE STRONGLY ADVISED TO CONSULT WITH A LICENSED FLORIDA REAL ESTATE ATTORNEY BEFORE EXECUTING THIS CONTRACT.</strong> This document does not constitute legal advice. This Contract is not binding until signed by all parties and delivered.</p>
             </div>
           </div>
+    );
 
-          {/* Print button bottom */}
-          <div className="no-print" style={{textAlign:"center",marginTop:24,marginBottom:48}}>
-            <button onClick={handlePrint}
-              style={{background:"linear-gradient(135deg,#2563eb,#1e40af)",color:"#fff",border:"none",borderRadius:10,padding:"14px 48px",fontSize:15,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 12px rgba(37,99,235,0.3)",display:"inline-flex",alignItems:"center",gap:8}}>
-              <PrintIcon/> Print Contract / Save as PDF
-            </button>
-            <p style={{fontSize:12,color:"#6b7280",marginTop:8}}>{hasPaid ? "Tip: Choose \"Save as PDF\" in the print dialog to save a digital copy" : "One-time fee of $"+OFFER_FEE+" required to print"}</p>
+    return (
+      <div className="gradient-bg min-h-screen">
+        {/* EDITOR TOOLBAR */}
+        <div className="no-print" style={{background:"#1e293b",color:"#fff",padding:"12px 0",position:"sticky",top:0,zIndex:100}}>
+          <div style={{maxWidth:900,margin:"0 auto",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <button onClick={()=>setStep("analysis")} style={{background:"none",border:"none",color:"#93c5fd",fontSize:13,cursor:"pointer",display:"flex",alignItems:"center",gap:4}}>
+                <ChevLeft c="#93c5fd"/> Back to Analysis
+              </button>
+              <span style={{color:"#475569"}}>|</span>
+              <span style={{fontSize:13,color:"#94a3b8"}}>Residential Sale & Purchase Contract</span>
+            </div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <button onClick={()=>setPreviewMode(false)}
+                style={{background:!previewMode?"#3b82f6":"transparent",color:!previewMode?"#fff":"#94a3b8",border:"1px solid "+(!previewMode?"#3b82f6":"#475569"),borderRadius:6,padding:"6px 14px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                Edit
+              </button>
+              <button onClick={()=>setPreviewMode(true)}
+                style={{background:previewMode?"#3b82f6":"transparent",color:previewMode?"#fff":"#94a3b8",border:"1px solid "+(previewMode?"#3b82f6":"#475569"),borderRadius:6,padding:"6px 14px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                Preview
+              </button>
+              <button onClick={()=>showToast("Draft saved!")}
+                style={{background:"transparent",color:"#94a3b8",border:"1px solid #475569",borderRadius:6,padding:"6px 14px",fontSize:12,fontWeight:600,cursor:"pointer"}}>
+                Save Draft
+              </button>
+              <button onClick={handlePrint}
+                style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 20px",fontSize:13,fontWeight:600,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+                <PrintIcon/> Print / Save as PDF
+              </button>
+            </div>
           </div>
         </div>
+
+        <div style={{maxWidth:900,margin:"0 auto",padding:"24px"}}>
+
+          {/* ═══ PREVIEW MODE ═══ */}
+          {previewMode && (
+            <>
+              <div className="no-print" style={{marginBottom:20}}>
+                <PrintableContract />
+              </div>
+              <div className="no-print" style={{textAlign:"center",marginBottom:24}}>
+                <button onClick={()=>setPreviewMode(false)}
+                  style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"10px 24px",fontSize:13,fontWeight:600,cursor:"pointer",marginRight:12}}>
+                  Edit Document
+                </button>
+                <button onClick={handlePrint}
+                  style={{background:"linear-gradient(135deg,#16a34a,#15803d)",color:"#fff",border:"none",borderRadius:8,padding:"10px 24px",fontSize:13,fontWeight:600,cursor:"pointer"}}>
+                  <span style={{display:"inline-flex",alignItems:"center",gap:6}}><PrintIcon s={14}/> Print / Save as PDF</span>
+                </button>
+                <p style={{fontSize:12,color:"#6b7280",marginTop:8}}>{hasPaid ? "Tip: Choose \"Save as PDF\" in the print dialog to save a digital copy" : "One-time fee of $"+OFFER_FEE+" required to print"}</p>
+              </div>
+            </>
+          )}
+
+          {/* ═══ EDIT MODE ═══ */}
+          {!previewMode && (
+            <>
+
+          {/* ═══ EDITOR PANEL 0: OFFER PRICE ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20,background:"linear-gradient(135deg,#eff6ff,#f0fdf4)",border:"1px solid #93c5fd"}}>
+            {sectHead("Your Offer Price","")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,alignItems:"end"}}>
+              <div>
+                <label style={lbl}>Offer Amount ($)</label>
+                <input type="number" value={manualOfferPrice > 0 ? manualOfferPrice : of.rec}
+                  onChange={e=>setManualOfferPrice(+e.target.value)}
+                  style={{...fld,fontSize:18,fontWeight:700,padding:"12px 14px",borderColor:"#3b82f6"}}/>
+                <p style={{fontSize:11,color:"#6b7280",margin:"6px 0 0"}}>
+                  AI Suggested: <strong style={{color:"#2563eb"}}>${of.rec.toLocaleString()}</strong> (Range: ${of.lo.toLocaleString()} — ${of.hi.toLocaleString()})
+                </p>
+              </div>
+              <div>
+                <div style={{background:"#fff",borderRadius:8,padding:14,border:"1px solid #e5e7eb"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
+                    <span style={{color:"#6b7280"}}>List Price:</span>
+                    <span style={{textDecoration:"line-through",color:"#ef4444"}}>${l.price.toLocaleString()}</span>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}>
+                    <span style={{color:"#6b7280"}}>Your Offer:</span>
+                    <span style={{fontWeight:700,color:"#111827"}}>${offerPrice.toLocaleString()}</span>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+                    <span style={{color:"#6b7280"}}>Savings:</span>
+                    <span style={{fontWeight:600,color:offerSave>=0?"#16a34a":"#dc2626"}}>${offerSave.toLocaleString()} ({offerSavePct}%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {manualOfferPrice > 0 && manualOfferPrice !== of.rec && (
+              <div style={{marginTop:12,display:"flex",alignItems:"center",gap:8}}>
+                <span style={{fontSize:12,color:"#6b7280"}}>Using your manual offer price.</span>
+                <button onClick={()=>setManualOfferPrice(0)} style={{background:"none",border:"none",color:"#2563eb",fontSize:12,cursor:"pointer",textDecoration:"underline"}}>
+                  Reset to AI suggestion (${of.rec.toLocaleString()})
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ═══ EDITOR PANEL 1: BUYER ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Buyer Information")}
+            <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:12,marginBottom:16}}>
+              <p style={{fontSize:12,color:"#1e40af",margin:0,lineHeight:1.5}}>
+                <strong>Save on commission:</strong> This contract is designed so you can submit an offer directly to the seller or listing agent without needing your own buyer's agent. If you do have a buyer's agent, toggle the option below to include their information.
+              </p>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              {[
+                {label:"Buyer Full Legal Name(s)",key:"name",ph:"John A. Smith and Jane B. Smith"},
+                {label:"Current Address",key:"address",ph:"123 Current St"},
+                {label:"City",key:"city",ph:"Tampa"},
+                {label:"State",key:"state",ph:"FL"},
+                {label:"ZIP",key:"zip",ph:"33601"},
+                {label:"Phone",key:"phone",ph:"(813) 555-0100"},
+                {label:"Email",key:"email",ph:"buyer@email.com"},
+              ].map(f=>(
+                <div key={f.key}>
+                  <label style={lbl}>{f.label}</label>
+                  <input value={buyerInfo[f.key]} onChange={e=>setBuyerInfo({...buyerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
+                </div>
+              ))}
+            </div>
+
+            {/* Optional Agent Toggle */}
+            <div style={{marginTop:20,padding:14,background:hasBuyerAgent?"#f0fdf4":"#f9fafb",borderRadius:8,border:"1px solid "+(hasBuyerAgent?"#bbf7d0":"#e5e7eb")}}>
+              <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,fontWeight:600,color:hasBuyerAgent?"#166534":"#6b7280"}}>
+                <input type="checkbox" checked={hasBuyerAgent} onChange={e=>setHasBuyerAgent(e.target.checked)} style={{accentColor:"#16a34a"}}/>
+                I have a Buyer's Agent (optional)
+              </label>
+              {!hasBuyerAgent && <p style={{fontSize:11,color:"#9ca3af",margin:"6px 0 0 26px"}}>Leave unchecked if you are representing yourself. You may save 2.5-3% in buyer agent commission.</p>}
+            </div>
+            {hasBuyerAgent && (
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,padding:14,background:"#f9fafb",borderRadius:8}}>
+                {[
+                  {label:"Agent Name",key:"agent",ph:"Licensed agent name"},
+                  {label:"Agent License #",key:"agentLicense",ph:"SL3XXXXXX"},
+                  {label:"Agent Phone",key:"agentPhone",ph:"(813) 555-0200"},
+                  {label:"Agent Email",key:"agentEmail",ph:"agent@brokerage.com"},
+                  {label:"Brokerage Name",key:"brokerage",ph:"ABC Realty, Inc."},
+                  {label:"Brokerage License #",key:"brokerageLicense",ph:"CQ10XXXXX"},
+                ].map(f=>(
+                  <div key={f.key}>
+                    <label style={lbl}>{f.label}</label>
+                    <input value={buyerInfo[f.key]} onChange={e=>setBuyerInfo({...buyerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Seller Information")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              <div>
+                <label style={lbl}>Seller Full Legal Name(s)</label>
+                <input value={sellerInfo.name} onChange={e=>setSellerInfo({...sellerInfo,name:e.target.value})} placeholder="Current property owner(s)" style={fld}/>
+              </div>
+              <div>
+                <label style={lbl}>Seller Address</label>
+                <input value={sellerInfo.address} onChange={e=>setSellerInfo({...sellerInfo,address:e.target.value})} placeholder="(if known)" style={fld}/>
+              </div>
+            </div>
+
+            {/* Optional Listing Agent Toggle */}
+            <div style={{marginTop:20,padding:14,background:hasListingAgent?"#f0fdf4":"#f9fafb",borderRadius:8,border:"1px solid "+(hasListingAgent?"#bbf7d0":"#e5e7eb")}}>
+              <label style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",fontSize:13,fontWeight:600,color:hasListingAgent?"#166534":"#6b7280"}}>
+                <input type="checkbox" checked={hasListingAgent} onChange={e=>setHasListingAgent(e.target.checked)} style={{accentColor:"#16a34a"}}/>
+                Property has a Listing Agent
+              </label>
+              {!hasListingAgent && <p style={{fontSize:11,color:"#9ca3af",margin:"6px 0 0 26px"}}>Uncheck if the seller is self-represented (FSBO).</p>}
+            </div>
+            {hasListingAgent && (
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginTop:14,padding:14,background:"#f9fafb",borderRadius:8}}>
+                {[
+                  {label:"Listing Agent Name",key:"agent",ph:"Listing agent name"},
+                  {label:"Listing Agent License #",key:"agentLicense",ph:"SL3XXXXXX"},
+                  {label:"Listing Agent Phone",key:"agentPhone",ph:"(813) 555-0300"},
+                  {label:"Listing Brokerage",key:"brokerage",ph:"XYZ Realty, LLC"},
+                ].map(f=>(
+                  <div key={f.key}>
+                    <label style={lbl}>{f.label}</label>
+                    <input value={sellerInfo[f.key]} onChange={e=>setSellerInfo({...sellerInfo,[f.key]:e.target.value})} placeholder={f.ph} style={fld}/>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ═══ EDITOR PANEL 2: PROPERTY & LEGAL ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Property & Legal Description")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+              <div><label style={lbl}>County</label><input value={countyName} onChange={e=>setCountyName(e.target.value)} placeholder="Hillsborough" style={fld}/></div>
+              <div>
+                <label style={lbl}>Tax Parcel ID / Folio # <Tip id="taxParcelId" text={TIPS.taxParcelId}/></label>
+                <div style={{display:"flex",gap:8}}>
+                  <input value={taxParcelId} onChange={e=>setTaxParcelId(e.target.value)} placeholder="e.g. A-12-29-18-3TK-000001-00001.0" style={{...fld,flex:1}}/>
+                  <button onClick={()=>{
+                    setLookupParcel(true);
+                    setTimeout(()=>{
+                      setLookupParcel(false);
+                      if(sel && sel.parcelId) setTaxParcelId(sel.parcelId);
+                    },1200);
+                  }} style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:"8px 12px",fontSize:12,fontWeight:600,color:"#2563eb",cursor:"pointer",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}>
+                    {lookupParcel ? <span className="lookup-spinner"/> : "Lookup"}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div style={{marginTop:14}}>
+              <label style={lbl}>Legal Description <Tip id="legalDescription" text={TIPS.legalDescription}/></label>
+              <div style={{display:"flex",gap:8,alignItems:"flex-start"}}>
+                <textarea value={legalDescription} onChange={e=>setLegalDescription(e.target.value)} placeholder="Lot 12, Block 3, SUNSET PARK SUBDIVISION, as recorded in Plat Book 45, Page 78, of the Public Records of Hillsborough County, Florida."
+                  style={{...fld,minHeight:60,resize:"vertical",flex:1}}/>
+                <button onClick={()=>{
+                  setLookupLegal(true);
+                  setTimeout(()=>{
+                    setLookupLegal(false);
+                    if(sel && sel.legalDesc) setLegalDescription(sel.legalDesc);
+                  },1200);
+                }} style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:8,padding:"8px 12px",fontSize:12,fontWeight:600,color:"#2563eb",cursor:"pointer",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,marginTop:0}}>
+                  {lookupLegal ? <span className="lookup-spinner"/> : "Lookup"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 3: FINANCIAL TERMS ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Financial Terms")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+              <div><label style={lbl}>Earnest Money Deposit ($) <Tip id="earnestMoney" text={TIPS.earnestMoney}/></label><input type="number" value={earnestMoney} onChange={e=>setEarnestMoney(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Additional Deposit ($) <Tip id="additionalDeposit" text={TIPS.additionalDeposit}/></label><input type="number" value={additionalDeposit} onChange={e=>setAdditionalDeposit(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Deposit Deadline (days) <Tip id="depositDeadline" text={TIPS.depositDeadline}/></label><input type="number" value={depositDeadline} onChange={e=>setDepositDeadline(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Escrow / Title Agent <Tip id="escrowAgent" text={TIPS.escrowAgent}/></label><input value={escrowAgent} onChange={e=>setEscrowAgent(e.target.value)} placeholder="Title company name" style={fld}/></div>
+              <div><label style={lbl}>Financing Type <Tip id="financingType" text={TIPS.financingType}/></label>
+                <select value={financingType} onChange={e=>setFinancingType(e.target.value)} style={fld}>
+                  <option>Conventional</option><option>FHA</option><option>VA</option><option>USDA</option><option>Cash (No Financing)</option><option>Seller Financing</option><option>Assumption</option>
+                </select>
+              </div>
+              <div><label style={lbl}>Loan Term (years) <Tip id="loanTerm" text={TIPS.loanTerm}/></label><input type="number" value={loanTerm} onChange={e=>setLoanTerm(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Interest Rate Cap (%) <Tip id="interestRateCap" text={TIPS.interestRateCap}/></label><input type="number" step="0.125" value={interestRateCap} onChange={e=>setInterestRateCap(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Seller Concessions ($) <Tip id="sellerConcessions" text={TIPS.sellerConcessions}/></label><input type="number" value={sellerConcessions} onChange={e=>setSellerConcessions(+e.target.value)} style={fld}/></div>
+              <div style={{display:"flex",alignItems:"end",gap:8,paddingBottom:4}}>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={preApproval} onChange={e=>setPreApproval(e.target.checked)} style={{accentColor:"#2563eb"}}/>Pre-Approval Letter <Tip id="preApproval" text={TIPS.preApproval}/>
+                </label>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginTop:14}}>
+              <div><label style={lbl}>Closing Period (days) <Tip id="closingDays" text={TIPS.closingDays}/></label><input type="number" value={closingDays} onChange={e=>setClosingDays(+e.target.value)} style={fld}/></div>
+              <div><label style={lbl}>Offer Expires (days) <Tip id="offerExpDays" text={TIPS.offerExpDays}/></label><input type="number" value={offerExpDays} onChange={e=>setOfferExpDays(+e.target.value)} style={fld}/></div>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 4: TITLE, DEED, CLOSING ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Title, Deed & Closing")}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+              <div><label style={lbl}>Title Company <Tip id="titleCompany" text={TIPS.titleCompany}/></label><input value={titleCompany} onChange={e=>setTitleCompany(e.target.value)} placeholder="Name of title company" style={fld}/></div>
+              <div><label style={lbl}>Title Insurance Paid By <Tip id="titlePaidBy" text={TIPS.titlePaidBy}/></label>
+                <select value={titlePaidBy} onChange={e=>setTitlePaidBy(e.target.value)} style={fld}><option>Buyer</option><option>Seller</option><option>Split 50/50</option></select>
+              </div>
+              <div><label style={lbl}>Deed Type <Tip id="deedType" text={TIPS.deedType}/></label>
+                <select value={deedType} onChange={e=>setDeedType(e.target.value)} style={fld}><option>Warranty Deed</option><option>Special Warranty Deed</option><option>Quitclaim Deed</option></select>
+              </div>
+              <div><label style={lbl}>Possession <Tip id="possessionAt" text={TIPS.possessionAt}/></label>
+                <select value={possessionAt} onChange={e=>setPossessionAt(e.target.value)} style={fld}><option>At Closing</option><option>Day After Closing</option><option>3 Days After Closing</option><option>Other (specify in Additional Terms)</option></select>
+              </div>
+              <div><label style={lbl}>Dispute Resolution <Tip id="disputeResolution" text={TIPS.disputeResolution}/></label>
+                <select value={disputeResolution} onChange={e=>setDisputeResolution(e.target.value)} style={fld}><option>Mediation then Litigation</option><option>Mediation then Arbitration</option><option>Litigation Only</option></select>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:8,justifyContent:"center"}}>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={surveyRequired} onChange={e=>setSurveyRequired(e.target.checked)} style={{accentColor:"#2563eb"}}/>Survey Required <Tip id="surveyRequired" text={TIPS.surveyRequired}/>
+                </label>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={walkthrough} onChange={e=>setWalkthrough(e.target.checked)} style={{accentColor:"#2563eb"}}/>Pre-Closing Walk-Through <Tip id="walkthrough" text={TIPS.walkthrough}/>
+                </label>
+                <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                  <input type="checkbox" checked={assignable} onChange={e=>setAssignable(e.target.checked)} style={{accentColor:"#2563eb"}}/>Contract Assignable <Tip id="assignable" text={TIPS.assignable}/>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 5: PERSONAL PROPERTY & WARRANTY ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Personal Property & Home Warranty")}
+            <div>
+              <label style={lbl}>Personal Property Included with Sale <Tip id="personalProperty" text={TIPS.personalProperty}/></label>
+              <textarea value={personalPropertyIncluded} onChange={e=>setPersonalPropertyIncluded(e.target.value)}
+                style={{...fld,minHeight:50,resize:"vertical"}}/>
+            </div>
+            <div style={{marginTop:14}}>
+              <label style={lbl}>Items Excluded from Sale</label>
+              <textarea value={personalPropertyExcluded} onChange={e=>setPersonalPropertyExcluded(e.target.value)} placeholder="e.g. Dining room chandelier, detached storage shed contents"
+                style={{...fld,minHeight:40,resize:"vertical"}}/>
+            </div>
+            <div style={{display:"flex",gap:16,alignItems:"center",marginTop:14}}>
+              <label style={{display:"flex",alignItems:"center",gap:6,fontSize:13,cursor:"pointer"}}>
+                <input type="checkbox" checked={homeWarranty} onChange={e=>setHomeWarranty(e.target.checked)} style={{accentColor:"#2563eb"}}/>Home Warranty <Tip id="homeWarranty" text={TIPS.homeWarranty}/>
+              </label>
+              {homeWarranty && <>
+                <div><label style={{...lbl,marginBottom:0,fontSize:11}}>Paid By</label>
+                  <select value={homeWarrantyPaidBy} onChange={e=>setHomeWarrantyPaidBy(e.target.value)} style={{...fld,width:120,padding:"4px 8px"}}>
+                    <option>Seller</option><option>Buyer</option>
+                  </select>
+                </div>
+                <div><label style={{...lbl,marginBottom:0,fontSize:11}}>Amount ($)</label>
+                  <input type="number" value={homeWarrantyAmount} onChange={e=>setHomeWarrantyAmount(+e.target.value)} style={{...fld,width:80,padding:"4px 8px"}}/>
+                </div>
+              </>}
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 6: CONTINGENCIES ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Contingencies")}
+            <p style={{fontSize:12,color:"#6b7280",margin:"-8px 0 16px"}}>Toggle on/off and adjust timeframes. Enabled items appear in the printed contract.</p>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {contingencies.map((c,i)=>(
+                <div key={c.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:c.enabled?"#f0fdf4":"#f9fafb",borderRadius:8,border:"1px solid "+(c.enabled?"#bbf7d0":"#e5e7eb")}}>
+                  <input type="checkbox" checked={c.enabled} onChange={e=>{
+                    const nc=[...contingencies]; nc[i]={...nc[i],enabled:e.target.checked}; setContingencies(nc);
+                  }} style={{accentColor:"#16a34a",flexShrink:0}}/>
+                  <span style={{fontSize:13,fontWeight:600,color:c.enabled?"#166534":"#6b7280",flex:1}}>{c.label}</span>
+                  <div style={{display:"flex",alignItems:"center",gap:4}}>
+                    <input type="number" value={c.days} onChange={e=>{
+                      const nc=[...contingencies]; nc[i]={...nc[i],days:+e.target.value}; setContingencies(nc);
+                    }} style={{width:50,border:bl,borderRadius:6,padding:"4px 8px",fontSize:12,textAlign:"center"}}/>
+                    <span style={{fontSize:11,color:"#9ca3af"}}>days</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <h4 style={{fontSize:12,fontWeight:600,color:"#374151",marginTop:16,marginBottom:8}}>Add Custom Contingency</h4>
+            {customContingencies.map((cc,i)=>(
+              <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:8}}>
+                <textarea value={cc} onChange={e=>{const nc=[...customContingencies];nc[i]=e.target.value;setCustomContingencies(nc);}}
+                  style={{flex:1,border:bl,borderRadius:8,padding:"8px 12px",fontSize:12,minHeight:50,resize:"vertical"}}/>
+                <button onClick={()=>setCustomContingencies(customContingencies.filter((_,j)=>j!==i))}
+                  style={{background:"#fee2e2",color:"#dc2626",border:"none",borderRadius:6,padding:"6px 10px",fontSize:12,cursor:"pointer",fontWeight:600}}>Remove</button>
+              </div>
+            ))}
+            <div style={{display:"flex",gap:8}}>
+              <input value={newCustom} onChange={e=>setNewCustom(e.target.value)} placeholder="Type a custom contingency..."
+                style={{flex:1,border:bl,borderRadius:8,padding:"8px 12px",fontSize:13,boxSizing:"border-box"}}/>
+              <button onClick={()=>{if(newCustom.trim()){setCustomContingencies([...customContingencies,newCustom.trim()]);setNewCustom("");}}}
+                style={{background:"#2563eb",color:"#fff",border:"none",borderRadius:8,padding:"8px 16px",fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>+ Add</button>
+            </div>
+          </div>
+
+          {/* ═══ EDITOR PANEL 7: ADDITIONAL TERMS ═══ */}
+          <div className="card no-print" style={{padding:24,marginBottom:20}}>
+            {sectHead("","Additional Terms & Special Provisions")}
+            <textarea value={additionalTerms} onChange={e=>setAdditionalTerms(e.target.value)} placeholder="Seller concessions toward closing costs, repair credits, specific move-out dates, appliance warranties, or any other special provisions..."
+              style={{...fld,minHeight:80,resize:"vertical"}}/>
+          </div>
+
+          {/* Preview Document button at the bottom of editor */}
+          <div className="no-print" style={{textAlign:"center",marginBottom:24}}>
+            <button onClick={()=>setPreviewMode(true)}
+              style={{background:"linear-gradient(135deg,#2563eb,#1e40af)",color:"#fff",border:"none",borderRadius:10,padding:"14px 48px",fontSize:15,fontWeight:700,cursor:"pointer",boxShadow:"0 4px 12px rgba(37,99,235,0.3)"}}>
+              Preview Document
+            </button>
+          </div>
+
+            </>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════════
+             PRINTABLE CONTRACT — ALWAYS IN DOM FOR PRINT (hidden on screen)
+             ═══════════════════════════════════════════════════════════════════ */}
+          <div className="print-only">
+            <PrintableContract />
+          </div>
+
+        </div>
         <PayModal/>
+        <Toast/>
       </div>
     );
   }
